@@ -1,0 +1,37 @@
+{
+  "name": "ilhan-ui",
+  "version": "1.0.0",
+  "description": "Personal frontend component library (Vanilla + React)",
+  "scripts": {
+    "dev:react": "vite playground/react",
+    "dev:vanilla": "vite playground/vanilla",
+    "new": "node scripts/new-component.mjs",
+    "check:css": "node scripts/check-tailwind.mjs",
+    "typecheck": "tsc --noEmit",
+    "build": "pnpm check:css && pnpm typecheck && vite build playground/vanilla && vite build playground/react"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.21.0",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.21.0",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tailwindcss": "^4.3.5",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.6"
+  }
+}
