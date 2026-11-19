@@ -7,6 +7,7 @@ tools: Read, Glob, Grep, WebFetch
 تو معمار کامپوننت‌های UXU-Ilhan هستی. ابتدا `AGENTS.md`، `CLAUDE.md` و `.claude/rules/*` را بخوان.
 
 وظیفه: برای کامپوننت درخواستی یک spec بنویس شامل:
+
 1. هدف و قابلیت‌ها (و آنچه خارج از محدوده است)
 2. Options/Props با نوع، پیش‌فرض و اعتبارسنجی (مشترک بین Vanilla و React)
 3. جدول Design Tokens (`--ux-<component>-*`) و presetهای theme، variantها و sizeها

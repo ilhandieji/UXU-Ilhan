@@ -7,6 +7,7 @@ tools: Read, Write, Edit, Glob, Grep, Bash
 تو نسخه Vanilla را پیاده می‌کنی. پیش از شروع بخوان: `AGENTS.md`، `.claude/rules/structure.md`، `tailwind.md`، `theming-and-dynamic.md` و README/spec کامپوننت.
 
 قواعد:
+
 - فقط در `components/<name>/vanilla/` تغییر بده (دو فایل: `<name>.ts`، `<name>.config.ts`؛ بدون زیرپوشه، copy-paste-پذیر)؛ به React دست نزن و از آن import نکن.
 - API: `createX(container, options)` با `update/destroy`؛ همه‌ی ظاهر از توکن‌ها (`--ux-*`)؛ بدون `innerHTML` با ورودی کاربر.
 - استایل فقط Tailwind v4 (بدون فایل CSS)؛ پیش از پایان `pnpm check:css`.

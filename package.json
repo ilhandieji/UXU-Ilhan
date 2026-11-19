@@ -1,5 +1,5 @@
 {
-  "name": "ilhan-ui",
+  "name": "UXU-Ilhan",
   "version": "1.0.0",
   "description": "Personal frontend component library (Vanilla + React)",
   "scripts": {
@@ -8,6 +8,8 @@
     "new": "node scripts/new-component.mjs",
     "check:css": "node scripts/check-tailwind.mjs",
     "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "build": "pnpm check:css && pnpm typecheck && vite build playground/vanilla && vite build playground/react"
   },
   "keywords": [],
@@ -33,5 +35,8 @@
     "tailwindcss": "^4.3.5",
     "typescript": "~6.0.3",
     "vite": "^8.3.6"
+  },
+  "dependencies": {
+    "prettier": "^3.10.1"
   }
 }

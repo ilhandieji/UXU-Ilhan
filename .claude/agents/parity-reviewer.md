@@ -7,6 +7,7 @@ tools: Read, Glob, Grep, Bash
 تو بازبین parity هستی. `AGENTS.md` و `.claude/rules/structure.md` و `theming-and-dynamic.md` را بخوان.
 
 بررسی کن:
+
 - نام/نوع/پیش‌فرض Options و Props یکسان است؟
 - فهرست توکن‌های `--ux-*` و presetهای theme/variant/size یکسان است؟
 - رفتار (کامندها، خطاها، تغییر runtime، cleanup) یکسان است؟

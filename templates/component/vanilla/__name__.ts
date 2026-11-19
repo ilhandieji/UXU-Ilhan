@@ -1,12 +1,15 @@
-import { defaults, resolveTokens, rootClass, type __Name__Options } from './__name__.config';
+import { defaults, resolveTokens, rootClass, type __Name__Options } from "./__name__.config";
 
 export interface __Name__Instance {
   update(partial: __Name__Options): void;
   destroy(): void;
 }
 
-export function create__Name__(container: HTMLElement, options: __Name__Options = {}): __Name__Instance {
-  const el = document.createElement('div');
+export function create__Name__(
+  container: HTMLElement,
+  options: __Name__Options = {},
+): __Name__Instance {
+  const el = document.createElement("div");
   el.className = rootClass;
   container.append(el);
 
@@ -14,8 +17,9 @@ export function create__Name__(container: HTMLElement, options: __Name__Options 
 
   function render() {
     el.textContent = current.label;
-    el.removeAttribute('style');
-    for (const [name, value] of Object.entries(resolveTokens(current))) el.style.setProperty(name, value);
+    el.removeAttribute("style");
+    for (const [name, value] of Object.entries(resolveTokens(current)))
+      el.style.setProperty(name, value);
   }
 
   render();
