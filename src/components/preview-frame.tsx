@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import type { Framework, RegistryEntry, StudioState, VanillaHandle } from '@/registry/types';
+import { useEffect, useRef } from "react";
+import type { Framework, RegistryEntry, StudioState, VanillaHandle } from "@/registry/types";
 
 function VanillaPreview({ entry, state }: { entry: RegistryEntry; state: StudioState }) {
   const host = useRef<HTMLDivElement>(null);
@@ -24,11 +24,25 @@ function VanillaPreview({ entry, state }: { entry: RegistryEntry; state: StudioS
   return <div ref={host} className="w-full" />;
 }
 
-export function PreviewFrame({ entry, framework, state }: { entry: RegistryEntry; framework: Framework; state: StudioState }) {
+export function PreviewFrame({
+  entry,
+  framework,
+  state,
+}: {
+  entry: RegistryEntry;
+  framework: Framework;
+  state: StudioState;
+}) {
   const Preview = entry.Preview;
   return (
     <div className="flex min-h-[32rem] items-center justify-center overflow-hidden rounded-lg border bg-[radial-gradient(circle,var(--color-border)_1px,transparent_1px)] bg-size-[20px_20px] p-4 sm:p-8">
-      <div className="w-full max-w-4xl">{framework === 'react' ? <Preview state={state} /> : <VanillaPreview entry={entry} state={state} />}</div>
+      <div className="w-full max-w-4xl">
+        {framework === "react" ? (
+          <Preview state={state} />
+        ) : (
+          <VanillaPreview entry={entry} state={state} />
+        )}
+      </div>
     </div>
   );
 }

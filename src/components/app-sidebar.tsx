@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Boxes, Home, TerminalSquare } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Boxes, Home, TerminalSquare } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -14,8 +14,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { components } from '@/registry/meta';
+} from "@/components/ui/sidebar";
+import { components } from "@/registry/meta";
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -23,7 +23,10 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="px-4 py-4">
-        <Link href="/" className="flex items-center gap-2 font-mono text-sm font-semibold tracking-tight">
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-mono text-sm font-semibold tracking-tight"
+        >
           <Boxes className="size-4 text-brand" aria-hidden />
           UXU-Ilhan
         </Link>
@@ -34,7 +37,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === '/'}>
+                <SidebarMenuButton asChild isActive={pathname === "/"}>
                   <Link href="/">
                     <Home aria-hidden />
                     Introduction
@@ -65,7 +68,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="px-4 pb-4 text-xs text-muted-foreground">React · Vanilla · Tailwind v4</SidebarFooter>
+      <SidebarFooter className="px-4 pb-4 text-xs text-muted-foreground">
+        React · Vanilla · Tailwind v4
+      </SidebarFooter>
     </Sidebar>
   );
 }

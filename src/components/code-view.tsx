@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { Check, Copy } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
+import { Check, Copy } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 type File = { name: string; code: string };
 
 /** Highlights with shiki (loaded lazily, debounced while the user types in the panel) */
 function Highlighted({ code, lang }: { code: string; lang: string }) {
-  const [html, setHtml] = useState('');
+  const [html, setHtml] = useState("");
 
   useEffect(() => {
     let cancelled = false;
     const timer = setTimeout(async () => {
-      const { codeToHtml } = await import('shiki');
-      const out = await codeToHtml(code, { lang, theme: 'github-dark-default' });
+      const { codeToHtml } = await import("shiki");
+      const out = await codeToHtml(code, { lang, theme: "github-dark-default" });
       if (!cancelled) setHtml(out);
     }, 120);
     return () => {
@@ -24,9 +24,17 @@ function Highlighted({ code, lang }: { code: string; lang: string }) {
     };
   }, [code, lang]);
 
-  if (!html) return <pre className="p-4 font-mono text-xs leading-relaxed text-muted-foreground">{code}</pre>;
+  if (!html)
+    return (
+      <pre className="p-4 font-mono text-xs leading-relaxed text-muted-foreground">{code}</pre>
+    );
   // shiki escapes the source; the code comes from this repository and the user's own panel values
-  return <div className="text-xs leading-relaxed [&_pre]:bg-transparent! [&_pre]:p-4" dangerouslySetInnerHTML={{ __html: html }} />;
+  return (
+    <div
+      className="text-xs leading-relaxed [&_pre]:bg-transparent! [&_pre]:p-4"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
 }
 
 function CopyButton({ text, label }: { text: string; label: string }) {
@@ -44,14 +52,22 @@ function CopyButton({ text, label }: { text: string; label: string }) {
       }}
     >
       {copied ? <Check aria-hidden /> : <Copy aria-hidden />}
-      {copied ? 'Copied' : 'Copy'}
+      {copied ? "Copied" : "Copy"}
     </Button>
   );
 }
 
-export function CodeView({ files, usage, requirements }: { files: File[]; usage: string; requirements: string[] }) {
-  const tabs = [...files, { name: 'Usage', code: usage }];
-  const [active, setActive] = useState(files[0]?.name ?? 'Usage');
+export function CodeView({
+  files,
+  usage,
+  requirements,
+}: {
+  files: File[];
+  usage: string;
+  requirements: string[];
+}) {
+  const tabs = [...files, { name: "Usage", code: usage }];
+  const [active, setActive] = useState(files[0]?.name ?? "Usage");
   const current = tabs.find((t) => t.name === active) ?? tabs[0];
 
   return (
@@ -74,7 +90,10 @@ export function CodeView({ files, usage, requirements }: { files: File[]; usage:
           <CopyButton text={current.code} label={current.name} />
         </div>
         <div className="max-h-[36rem] overflow-auto">
-          <Highlighted code={current.code} lang={current.name === 'Usage' || current.name.endsWith('x') ? 'tsx' : 'ts'} />
+          <Highlighted
+            code={current.code}
+            lang={current.name === "Usage" || current.name.endsWith("x") ? "tsx" : "ts"}
+          />
         </div>
       </div>
 
@@ -85,7 +104,10 @@ export function CodeView({ files, usage, requirements }: { files: File[]; usage:
             <li key={r}>{r}</li>
           ))}
         </ul>
-        <p className="mt-3 text-sm text-muted-foreground">Copy every file above into one folder of your project; they import each other by relative path.</p>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Copy every file above into one folder of your project; they import each other by relative
+          path.
+        </p>
       </section>
     </div>
   );

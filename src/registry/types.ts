@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
-export type Framework = 'react' | 'vanilla';
+export type Framework = "react" | "vanilla";
 export type OptionValue = string | boolean;
 
 /** What the user changed in the customize panel. Tokens hold only overrides. */
@@ -11,11 +11,22 @@ export interface StudioState {
 
 type Base = { key: string; label: string };
 export type Control =
-  | (Base & { type: 'color'; target: 'token' })
-  | (Base & { type: 'slider'; target: 'token'; min: number; max: number; step: number; unit: string })
-  | (Base & { type: 'select'; target: 'token' | 'option'; choices: { label: string; value: string }[] })
-  | (Base & { type: 'text'; target: 'option' })
-  | (Base & { type: 'switch'; target: 'option' });
+  | (Base & { type: "color"; target: "token" })
+  | (Base & {
+      type: "slider";
+      target: "token";
+      min: number;
+      max: number;
+      step: number;
+      unit: string;
+    })
+  | (Base & {
+      type: "select";
+      target: "token" | "option";
+      choices: { label: string; value: string }[];
+    })
+  | (Base & { type: "text"; target: "option" })
+  | (Base & { type: "switch"; target: "option" });
 
 export interface ControlGroup {
   title: string;

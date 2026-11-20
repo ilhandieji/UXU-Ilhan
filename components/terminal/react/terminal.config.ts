@@ -1,16 +1,16 @@
-// تنظیمات و نوع‌های Terminal — نام‌ها باید با نسخه React یکی باشد. spec: ../README.md
+// Terminal settings and types — names must match the React version. Spec: ../README.md
 import type { CommandDef, TerminalCommand } from "./terminal.commands";
-// استایل فقط با Tailwind: مقدار توکن‌ها اینجاست و با CSS Variable روی root ست می‌شود.
+// Styling is Tailwind-only: token values live here and are set as CSS variables on the root.
 
 export type TerminalThemeName = "matrix" | "classic-black" | "amber" | "light";
 export type TerminalVariant = "window" | "fullscreen" | "minimal";
 export type TerminalSize = "sm" | "md" | "lg";
 
-/** کلید توکن بدون پیشوند --ux-terminal- ؛ مثل { bg: '#000', accent: '#0f0' } */
+/** Token keys without the --ux-terminal- prefix, e.g. { bg: '#000', accent: '#0f0' } */
 export type TerminalTokens = Record<string, string>;
 
 export interface TerminalPage {
-  /** مسیر صفحه، مثل '/blog' */
+  /** Page path, e.g. '/blog' */
   path: string;
   title: string;
 }
@@ -19,41 +19,41 @@ export interface TerminalOptions {
   theme?: TerminalThemeName | TerminalTokens;
   variant?: TerminalVariant;
   size?: TerminalSize;
-  /** درخشش سبز (green glow) */
+  /** Text glow (green glow) */
   glow?: boolean;
   user?: string;
   host?: string;
-  /** مسیر نمایشی prompt؛ خالی = خودکار از آدرس صفحه (~/blog) */
+  /** Path shown in the prompt; empty = derived from the page URL (~/blog) */
   cwd?: string;
-  /** کاربر لاگین‌شده (whoami / prompt)؛ null = guest */
+  /** Logged-in user (whoami / prompt); null = guest */
   currentUser?: string | null;
-  /** عنوان نوار پنجره؛ پیش‌فرض user@host:cwd */
+  /** Window title bar text; defaults to user@host:cwd */
   title?: string;
-  /** بنر ASCII ابتدای ترمینال و کامند `banner`؛ false = بدون بنر */
+  /** ASCII banner shown on start and by the `banner` command; false = no banner */
   banner?: string[] | false;
   subtitle?: string;
-  /** خطوط وضعیت زیر بنر */
+  /** Status lines below the banner */
   boot?: { label: string; value: string }[];
-  /** راهنمای کوتاه زیر بنر */
+  /** Short help list below the banner */
   help?: { name: string; description: string }[];
   placeholder?: string;
-  /** اطلاعات ثابت سایت (version / fastfetch) */
+  /** Static site info (version / fastfetch) */
   site?: { name: string; version: string; language: string };
-  /** صفحه‌های قابل رفتن (cd / ls / sitemap) */
+  /** Navigable pages (cd / ls / sitemap) */
   pages?: TerminalPage[];
-  /** ناوبری SPA (مثلاً router.push در Next.js)؛ پیش‌فرض location.assign */
+  /** SPA navigation (e.g. router.push in Next.js); defaults to location.assign */
   navigate?: (path: string) => void;
-  /** کامند back؛ پیش‌فرض history.back() */
+  /** `back` command handler; defaults to history.back() */
   onBack?: () => void;
-  /** لوگوی ASCII سمت چپ fastfetch */
+  /** ASCII logo on the left of fastfetch */
   fastfetchArt?: string[];
-  /** داده‌ی نمایشی ifconfig و nmap */
+  /** Showcase data for ifconfig and nmap */
   showcase?: {
     ifconfig: string[];
     wifi: { essid: string; power: string; security: string }[];
     hosts: { ip: string; mac: string; host: string; ports: string }[];
   };
-  /** کامند سفارشی یا override کامند داخلی */
+  /** Custom commands or overrides of built-in ones */
   commands?: Record<string, TerminalCommand | CommandDef>;
   onCommand?: (line: string) => void;
 }
@@ -128,7 +128,7 @@ export const defaults: TerminalSettings = {
   commands: {},
 };
 
-// ---- توکن‌ها ----
+// ---- Tokens ----
 
 const common: TerminalTokens = {
   "font-family": "ui-monospace, 'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace",
@@ -221,7 +221,7 @@ export const variants: Record<TerminalVariant, TerminalTokens> = {
   minimal: { shadow: "none", radius: "4px" },
 };
 
-/** کلاس‌های Tailwind v4 — رشته‌ی کامل و استاتیک (تا scanner ببیند) */
+/** Tailwind v4 classes — complete, static strings (so the scanner can see them) */
 export const classes = {
   root: "relative box-border flex flex-col overflow-hidden border border-(color:--ux-terminal-border) bg-(color:--ux-terminal-bg) text-(color:--ux-terminal-accent) font-(family-name:--ux-terminal-font-family) text-(length:--ux-terminal-font-size) leading-(--ux-terminal-line-height) tracking-(--ux-terminal-letter-spacing) rounded-(--ux-terminal-radius) w-(--ux-terminal-width) [box-shadow:var(--ux-terminal-shadow)] selection:bg-(color:--ux-terminal-selection)",
   bar: "relative flex h-10 shrink-0 items-center border-b border-(color:--ux-terminal-border) bg-(color:--ux-terminal-titlebar-bg) px-3.5",
@@ -255,7 +255,7 @@ export const classes = {
     "min-w-0 flex-1 border-0 bg-transparent p-0 font-[inherit] text-[inherit] text-(color:--ux-terminal-fg) outline-none caret-(color:--ux-terminal-cursor) [text-shadow:inherit] placeholder:text-(color:--ux-terminal-dim)",
 };
 
-/** ترکیب توکن‌ها: theme ← size ← variant ← glow ← override کاربر (اگر theme آبجکت باشد) */
+/** Token merge order: theme ← size ← variant ← glow ← user override (when theme is an object) */
 export function resolveTokens({
   theme,
   size,

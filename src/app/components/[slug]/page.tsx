@@ -1,11 +1,11 @@
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { ComponentStudio } from '@/components/component-studio';
-import { PageHeader } from '@/components/page-header';
-import { components } from '@/registry/meta';
-import type { Framework } from '@/registry/types';
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { ComponentStudio } from "@/components/component-studio";
+import { PageHeader } from "@/components/page-header";
+import { components } from "@/registry/meta";
+import type { Framework } from "@/registry/types";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -23,10 +23,16 @@ async function readSources(slug: string, files: Record<Framework, string[]>) {
   const read = async (framework: Framework) =>
     Object.fromEntries(
       await Promise.all(
-        files[framework].map(async (file) => [file, await readFile(path.join(process.cwd(), 'components', slug, framework, file), 'utf8')] as const),
+        files[framework].map(
+          async (file) =>
+            [
+              file,
+              await readFile(path.join(process.cwd(), "components", slug, framework, file), "utf8"),
+            ] as const,
+        ),
       ),
     );
-  return { react: await read('react'), vanilla: await read('vanilla') };
+  return { react: await read("react"), vanilla: await read("vanilla") };
 }
 
 export default async function ComponentPage({ params }: Props) {
@@ -36,7 +42,7 @@ export default async function ComponentPage({ params }: Props) {
 
   return (
     <>
-      <PageHeader trail={['Components', meta.name]} />
+      <PageHeader trail={["Components", meta.name]} />
       <main className="w-full px-4 py-8 sm:px-6">
         <h1 className="text-3xl font-semibold tracking-tight">{meta.name}</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">{meta.description}</p>

@@ -1,23 +1,38 @@
-import { ArrowRight, Copy, SlidersHorizontal, TerminalSquare } from 'lucide-react';
-import Link from 'next/link';
-import { PageHeader } from '@/components/page-header';
-import { components } from '@/registry/meta';
+import { ArrowRight, Copy, SlidersHorizontal, TerminalSquare } from "lucide-react";
+import Link from "next/link";
+import { PageHeader } from "@/components/page-header";
+import { components } from "@/registry/meta";
 
 const steps = [
-  { icon: TerminalSquare, title: 'Pick a component', text: 'Every component ships as a React and a Vanilla version.' },
-  { icon: SlidersHorizontal, title: 'Customize it', text: 'Colors, fonts, frame and text update the live preview.' },
-  { icon: Copy, title: 'Copy the files', text: 'The config file is regenerated with your values. No extra props.' },
+  {
+    icon: TerminalSquare,
+    title: "Pick a component",
+    text: "Every component ships as a React and a Vanilla version.",
+  },
+  {
+    icon: SlidersHorizontal,
+    title: "Customize it",
+    text: "Colors, fonts, frame and text update the live preview.",
+  },
+  {
+    icon: Copy,
+    title: "Copy the files",
+    text: "The config file is regenerated with your values. No extra props.",
+  },
 ];
 
 export default function Home() {
   return (
     <>
-      <PageHeader trail={['Introduction']} />
+      <PageHeader trail={["Introduction"]} />
       <main className="mx-auto w-full max-w-5xl px-6 py-12">
         <p className="font-mono text-sm text-brand">UXU-Ilhan</p>
-        <h1 className="mt-2 text-balance text-4xl font-semibold tracking-tight">Copy-paste components you can tune first.</h1>
+        <h1 className="mt-2 text-balance text-4xl font-semibold tracking-tight">
+          Copy-paste components you can tune first.
+        </h1>
         <p className="mt-4 max-w-2xl text-pretty text-muted-foreground">
-          A personal library of dependency-free components, each in React and plain TypeScript, styled only with Tailwind v4.
+          A personal library of dependency-free components, each in React and plain TypeScript,
+          styled only with Tailwind v4.
         </p>
 
         <ol className="mt-10 grid gap-4 sm:grid-cols-3">
@@ -42,7 +57,10 @@ export default function Home() {
               >
                 <span className="flex items-center justify-between font-medium">
                   {c.name}
-                  <ArrowRight className="size-4 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden />
+                  <ArrowRight
+                    className="size-4 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5"
+                    aria-hidden
+                  />
                 </span>
                 <span className="mt-1 text-sm text-muted-foreground">{c.description}</span>
               </Link>

@@ -18,14 +18,14 @@ pnpm dev
 
 سپس `http://localhost:3000` (صفحه‌ی هر کامپوننت: `/components/<name>`).
 
-| مسیر | کار |
-|---|---|
-| `src/app/` | layout (dark، sidebar)، صفحه‌ی خانه، `components/[slug]` (سورس فایل‌ها هنگام build با `fs` خوانده می‌شود) |
-| `src/components/` | UI سایت: `component-studio`، `customize-panel`، `preview-frame`، `code-view`، `app-sidebar` |
-| `src/components/ui/` | shadcn (فقط UI سایت؛ کامپوننت‌های کتابخانه از آن استفاده نمی‌کنند) |
-| `src/lib/customize-config.ts` | فقط مقدارهای literal را در `<name>.config.ts` عوض می‌کند (کامنت و ساختار می‌ماند) |
-| `src/registry/` | برای هر کامپوننت: `<name>.meta.ts` (server-safe: نام، فایل‌ها، نیازمندی‌ها) و `<name>.tsx` (کنترل‌ها، preview، customize، usage) |
-| `src/app/globals.css` | تنها فایل CSS: Tailwind + `@source "../../components"` + تم dark سایت |
+| مسیر                          | کار                                                                                                                              |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app/`                    | layout (dark، sidebar)، صفحه‌ی خانه، `components/[slug]` (سورس فایل‌ها هنگام build با `fs` خوانده می‌شود)                        |
+| `src/components/`             | UI سایت: `component-studio`، `customize-panel`، `preview-frame`، `code-view`، `app-sidebar`                                      |
+| `src/components/ui/`          | shadcn (فقط UI سایت؛ کامپوننت‌های کتابخانه از آن استفاده نمی‌کنند)                                                               |
+| `src/lib/customize-config.ts` | فقط مقدارهای literal را در `<name>.config.ts` عوض می‌کند (کامنت و ساختار می‌ماند)                                                |
+| `src/registry/`               | برای هر کامپوننت: `<name>.meta.ts` (server-safe: نام، فایل‌ها، نیازمندی‌ها) و `<name>.tsx` (کنترل‌ها، preview، customize، usage) |
+| `src/app/globals.css`         | تنها فایل CSS: Tailwind + `@source "../../components"` + تم dark سایت                                                            |
 
 ### کنترل‌ها
 

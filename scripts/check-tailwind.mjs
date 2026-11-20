@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// قواعد فایل‌های کامپوننت:
-//  ۱) Tailwind-only: فایل CSS (مگر با خط اول `/* tailwind-exception: دلیل */`) و تگ <style> ممنوع.
-//  ۲) بدون زیرپوشه: هر نسخه (react/ و vanilla/) فقط فایل دارد، نه src/ یا پوشه‌ی دیگر.
+// Component file rules:
+//  1) Tailwind-only: no CSS files (unless the first line is `/* tailwind-exception: reason */`) and no <style> tags.
+//  2) No subfolders: each version (react/ and vanilla/) holds only files, no src/ or other folders.
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -27,21 +27,21 @@ for (const dir of implDirs) {
     const path = join(dir, entry);
     const rel = relative(root, path);
     if (statSync(path).isDirectory()) {
-      errors.push(`${rel}/: زیرپوشه ممنوع است (فقط فایل‌های کامپوننت)`);
+      errors.push(`${rel}/: subfolders are not allowed (component files only)`);
       continue;
     }
     const text = readFileSync(path, "utf8");
     if (entry.endsWith(".css") && !EXCEPTION.test(text.split("\n")[0])) {
-      errors.push(`${rel}: فایل CSS ممنوع است (یا خط اول /* tailwind-exception: دلیل */ بگذار)`);
+      errors.push(`${rel}: CSS files are not allowed (or start the file with /* tailwind-exception: reason */)`);
     }
     if (/\.(ts|tsx|js|jsx)$/.test(entry) && /<style[\s>]/.test(text)) {
-      errors.push(`${rel}: تگ <style> ممنوع است`);
+      errors.push(`${rel}: <style> tags are not allowed`);
     }
   }
 }
 
 if (errors.length) {
-  console.error("✖ نقض قواعد کامپوننت:\n" + errors.map((e) => "  - " + e).join("\n"));
+  console.error("✖ Component rule violations:\n" + errors.map((e) => "  - " + e).join("\n"));
   process.exit(1);
 }
-console.log(`✔ ${implDirs.length} پوشه‌ی کامپوننت بررسی شد (Tailwind-only، بدون زیرپوشه).`);
+console.log(`✔ ${implDirs.length} component folders checked (Tailwind-only, no subfolders).`);

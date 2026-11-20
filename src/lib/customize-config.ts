@@ -8,7 +8,7 @@ export type Literal = string | number | boolean;
 
 function skipString(src: string, i: number): number {
   const quote = src[i];
-  for (i++; i < src.length && src[i] !== quote; i++) if (src[i] === '\\') i++;
+  for (i++; i < src.length && src[i] !== quote; i++) if (src[i] === "\\") i++;
   return i;
 }
 
@@ -17,10 +17,10 @@ function matchBracket(src: string, open: number): number {
   let depth = 0;
   for (let i = open; i < src.length; i++) {
     const c = src[i];
-    if (c === '"' || c === "'" || c === '`') i = skipString(src, i);
-    else if (c === '/' && src[i + 1] === '/') i = src.indexOf('\n', i);
-    else if ('{[('.includes(c)) depth++;
-    else if ('}])'.includes(c) && --depth === 0) return i;
+    if (c === '"' || c === "'" || c === "`") i = skipString(src, i);
+    else if (c === "/" && src[i + 1] === "/") i = src.indexOf("\n", i);
+    else if ("{[(".includes(c)) depth++;
+    else if ("}])".includes(c) && --depth === 0) return i;
     if (i < 0) break;
   }
   return -1;
@@ -33,13 +33,13 @@ function findProp(src: string, range: Range, key: string): Prop | null {
   for (let i = range.open + 1; i < range.close; i++) {
     const c = src[i];
     if (/\s/.test(c)) continue;
-    if (c === '/' && src[i + 1] === '/') {
-      i = src.indexOf('\n', i);
+    if (c === "/" && src[i + 1] === "/") {
+      i = src.indexOf("\n", i);
       continue;
     }
     if (depth === 0 && expectKey) {
       expectKey = false;
-      if (c === '.') continue; // spread `...common`
+      if (c === ".") continue; // spread `...common`
       let name: string;
       let end: number;
       if (c === '"' || c === "'") {
@@ -61,10 +61,10 @@ function findProp(src: string, range: Range, key: string): Prop | null {
       i = end - 1;
       continue;
     }
-    if (c === '"' || c === "'" || c === '`') i = skipString(src, i);
-    else if ('{[('.includes(c)) depth++;
-    else if ('}])'.includes(c)) depth--;
-    else if (c === ',' && depth === 0) expectKey = true;
+    if (c === '"' || c === "'" || c === "`") i = skipString(src, i);
+    else if ("{[(".includes(c)) depth++;
+    else if ("}])".includes(c)) depth--;
+    else if (c === "," && depth === 0) expectKey = true;
   }
   return null;
 }
@@ -74,10 +74,10 @@ function valueEnd(src: string, start: number, limit: number): number {
   let i = start;
   for (; i < limit; i++) {
     const c = src[i];
-    if (c === '"' || c === "'" || c === '`') i = skipString(src, i);
-    else if ('{[('.includes(c)) depth++;
-    else if ('}])'.includes(c)) depth--;
-    else if (c === ',' && depth === 0) break;
+    if (c === '"' || c === "'" || c === "`") i = skipString(src, i);
+    else if ("{[(".includes(c)) depth++;
+    else if ("}])".includes(c)) depth--;
+    else if (c === "," && depth === 0) break;
   }
   while (/\s/.test(src[i - 1])) i--;
   return i;
@@ -90,19 +90,20 @@ function locate(src: string, path: string[]): Range | null {
   let range: Range = { open, close: matchBracket(src, open) };
   for (const key of path.slice(1)) {
     const prop = findProp(src, range, key);
-    if (!prop || src[prop.valueStart] !== '{') return null;
+    if (!prop || src[prop.valueStart] !== "{") return null;
     open = prop.valueStart;
     range = { open, close: matchBracket(src, open) };
   }
   return range;
 }
 
-const usesDoubleQuotes = (src: string) => (src.match(/: "/g)?.length ?? 0) >= (src.match(/: '/g)?.length ?? 0);
+const usesDoubleQuotes = (src: string) =>
+  (src.match(/: "/g)?.length ?? 0) >= (src.match(/: '/g)?.length ?? 0);
 
 function literal(value: Literal, src: string): string {
-  if (typeof value !== 'string') return String(value);
+  if (typeof value !== "string") return String(value);
   if (usesDoubleQuotes(src)) return JSON.stringify(value);
-  return `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+  return `'${value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
 }
 
 function keyLiteral(key: string, src: string): string {
@@ -124,11 +125,11 @@ export function setValue(src: string, path: string[], key: string, value: Litera
   while (/\s/.test(src[last])) last--;
   const entry = `${keyLiteral(key, src)}: ${literal(value, src)}`;
   const body = src.slice(range.open, range.close);
-  if (!body.includes('\n')) {
-    const sep = src[last] === '{' ? ' ' : src[last] === ',' ? ' ' : ', ';
+  if (!body.includes("\n")) {
+    const sep = src[last] === "{" ? " " : src[last] === "," ? " " : ", ";
     return `${src.slice(0, last + 1)}${sep}${entry} ${src.slice(range.close)}`;
   }
-  const indent = /\n([ \t]*)[^\n]*$/.exec(src.slice(range.open, last + 1))?.[1] ?? '  ';
-  const comma = src[last] === ',' || src[last] === '{' ? '' : ',';
+  const indent = /\n([ \t]*)[^\n]*$/.exec(src.slice(range.open, last + 1))?.[1] ?? "  ";
+  const comma = src[last] === "," || src[last] === "{" ? "" : ",";
   return `${src.slice(0, last + 1)}${comma}\n${indent}${entry},${src.slice(last + 1)}`;
 }

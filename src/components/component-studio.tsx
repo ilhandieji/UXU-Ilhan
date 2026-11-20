@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { RotateCcw } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { CodeView } from '@/components/code-view';
-import { CustomizePanel } from '@/components/customize-panel';
-import { PreviewFrame } from '@/components/preview-frame';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { getEntry } from '@/registry';
-import type { Framework, OptionValue, StudioState } from '@/registry/types';
+import { RotateCcw } from "lucide-react";
+import { useMemo, useState } from "react";
+import { CodeView } from "@/components/code-view";
+import { CustomizePanel } from "@/components/customize-panel";
+import { PreviewFrame } from "@/components/preview-frame";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { getEntry } from "@/registry";
+import type { Framework, OptionValue, StudioState } from "@/registry/types";
 
 type Props = { slug: string; sources: Record<Framework, Record<string, string>> };
 
@@ -17,7 +17,7 @@ export function ComponentStudio({ slug, sources }: Props) {
   const entry = getEntry(slug);
   if (!entry) throw new Error(`Unknown component: ${slug}`);
 
-  const [framework, setFramework] = useState<Framework>('react');
+  const [framework, setFramework] = useState<Framework>("react");
   const [state, setState] = useState<StudioState>(entry.initialState);
   const [previewKey, setPreviewKey] = useState(0);
 
@@ -27,7 +27,8 @@ export function ComponentStudio({ slug, sources }: Props) {
       tokens: key === entry.themeKey ? {} : prev.tokens,
       options: { ...prev.options, [key]: value },
     }));
-  const setToken = (key: string, value: string) => setState((prev) => ({ ...prev, tokens: { ...prev.tokens, [key]: value } }));
+  const setToken = (key: string, value: string) =>
+    setState((prev) => ({ ...prev, tokens: { ...prev.tokens, [key]: value } }));
 
   const reset = () => {
     setState(entry.initialState());
@@ -69,10 +70,19 @@ export function ComponentStudio({ slug, sources }: Props) {
           </div>
         </div>
         <TabsContent value="preview" className="mt-4">
-          <PreviewFrame key={`${framework}-${previewKey}`} entry={entry} framework={framework} state={state} />
+          <PreviewFrame
+            key={`${framework}-${previewKey}`}
+            entry={entry}
+            framework={framework}
+            state={state}
+          />
         </TabsContent>
         <TabsContent value="code" className="mt-4">
-          <CodeView files={files} usage={entry.usage(framework)} requirements={entry.requirements} />
+          <CodeView
+            files={files}
+            usage={entry.usage(framework)}
+            requirements={entry.requirements}
+          />
         </TabsContent>
       </Tabs>
 

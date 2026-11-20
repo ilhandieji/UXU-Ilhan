@@ -1,11 +1,11 @@
-// تنظیمات و نوع‌های __Name__ — نام‌ها باید با نسخه React یکی باشد.
-// استایل فقط با Tailwind: مقدار توکن‌ها اینجاست و با CSS Variable روی root ست می‌شود.
+// __Name__ settings and types — names must match the React version.
+// Styling is Tailwind-only: token values live here and are set as CSS variables on the root.
 
 export type __Name__ThemeName = "dark" | "light";
 export type __Name__Variant = "default" | "outline";
 export type __Name__Size = "sm" | "md" | "lg";
 
-/** کلید توکن بدون پیشوند --ux-__name__- ؛ مثل { bg: '#000' } */
+/** Token keys without the --ux-__name__- prefix, e.g. { bg: '#000' } */
 export type __Name__Tokens = Record<string, string>;
 
 export interface __Name__Options {
@@ -50,11 +50,11 @@ export const variants: Record<__Name__Variant, __Name__Tokens> = {
   outline: { "border-width": "1px" },
 };
 
-/** کلاس‌های Tailwind v4 — رشته‌ی کامل و استاتیک (تا scanner ببیند) */
+/** Tailwind v4 classes — complete, static strings (so the scanner can see them) */
 export const rootClass =
   "bg-(color:--ux-__name__-bg) text-(color:--ux-__name__-fg) border-(color:--ux-__name__-border) border-(length:--ux-__name__-border-width) font-(family-name:--ux-__name__-font-family) text-(length:--ux-__name__-font-size) p-(--ux-__name__-padding) rounded-(--ux-__name__-radius)";
 
-/** ترکیب توکن‌ها: theme ← size ← variant ← override کاربر (اگر theme آبجکت باشد) */
+/** Token merge order: theme ← size ← variant ← user override (when theme is an object) */
 export function resolveTokens({
   theme,
   size,

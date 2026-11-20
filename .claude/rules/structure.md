@@ -12,7 +12,7 @@ paths:
 - **هر نسخه دقیقاً دو فایل، بدون زیرپوشه** (`src/` ممنوع)؛ بدون `package.json`/`tsconfig`/فایل‌های سایت در پوشه‌ی کامپوننت. فایل بالای ~۳۰۰ خط ⇒ یک فایل هم‌سطح.
 - importهای داخلی نسبی و بدون پسوند (`./terminal.config`)؛ بدون alias (`@/...`) و بدون import از بیرون پوشه‌ی همان نسخه.
 - کامپوننت جدید فقط با `pnpm new <kebab-name>`؛ تغییر ساختار همه = اصلاح `templates/component/`.
-- کد ساده و خوانا؛ بدون `index.ts` واسط و انتزاع زودهنگام.
+- کد ساده و خوانا؛ بدون `index.ts` واسط و انتزاع زودهنگام. **کامنت‌ها فقط انگلیسی.**
 - **Vanilla:** TypeScript (`.ts`، بدون TSX و React). API: `createX(container, options)` ← `{ update(partial), destroy() }`. `destroy` همه‌ی listener/timer/DOM را پاک کند. ورودی کاربر هرگز با `innerHTML` درج نشود. `window/document` فقط داخل `createX`.
 - **React:** TSX، `'use client'`، SSR-safe، Props تایپ‌شده و هم‌نام با Options Vanilla، `ref` برای API imperative، تغییر props بدون remount.
 - **استقلال:** Vanilla از React و React از Vanilla import نمی‌کند؛ Wrapper ممنوع؛ هر نسخه `<name>.config.ts` خودش را دارد (کپی مستقل).

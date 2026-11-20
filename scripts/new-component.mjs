@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// استفاده: pnpm new <kebab-case-name>
-// کپی templates/component به components/<name>، ساخت ورودی registry سایت (src/registry) و ثبت آن.
+// Usage: pnpm new <kebab-case-name>
+// Copies templates/component to components/<name>, creates the site registry entry (src/registry) and registers it.
 import {
   cpSync,
   existsSync,
@@ -17,13 +17,13 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const name = process.argv[2];
 
 if (!name || !/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/.test(name)) {
-  console.error("نام نامعتبر. از kebab-case استفاده کن، مثل: pnpm new image-card");
+  console.error("Invalid name. Use kebab-case, e.g. pnpm new image-card");
   process.exit(1);
 }
 
 const target = join(root, "components", name);
 if (existsSync(target)) {
-  console.error(`components/${name} از قبل وجود دارد.`);
+  console.error(`components/${name} already exists.`);
   process.exit(1);
 }
 
@@ -33,7 +33,11 @@ const pascal = name
   .join("");
 const camelName = pascal[0].toLowerCase() + pascal.slice(1);
 const fill = (text) =>
-  text.replaceAll("__name__Meta", `${camelName}Meta`).replaceAll("__name__: RegistryEntry", `${camelName}: RegistryEntry`).replaceAll("__name__", name).replaceAll("__Name__", pascal);
+  text
+    .replaceAll("__name__Meta", `${camelName}Meta`)
+    .replaceAll("__name__: RegistryEntry", `${camelName}: RegistryEntry`)
+    .replaceAll("__name__", name)
+    .replaceAll("__Name__", pascal);
 
 function walk(dir) {
   for (const entry of readdirSync(dir)) {
@@ -47,12 +51,12 @@ function walk(dir) {
   }
 }
 
-/** افزودن یک خط بالای خط نشانه (با همان تورفتگی) */
+/** Inserts a line above the marker line (keeping its indentation) */
 function insertBefore(file, marker, line) {
   const path = join(root, file);
   const text = readFileSync(path, "utf8");
   const match = text.match(new RegExp(`^([ \\t]*)${marker}$`, "m"));
-  if (!match) throw new Error(`نشانه‌ی ${marker} در ${file} پیدا نشد`);
+  if (!match) throw new Error(`Marker ${marker} not found in ${file}`);
   writeFileSync(path, text.replace(match[0], `${match[1]}${line}\n${match[0]}`));
 }
 
@@ -64,11 +68,19 @@ for (const file of ["__name__.meta.ts", "__name__.tsx"]) {
   const out = join(root, "src", "registry", fill(file));
   writeFileSync(out, fill(readFileSync(join(root, "templates", "registry", file), "utf8")));
 }
-insertBefore("src/registry/meta.ts", "// @new-meta-import", `import { ${camelName}Meta } from "./${name}.meta";`);
+insertBefore(
+  "src/registry/meta.ts",
+  "// @new-meta-import",
+  `import { ${camelName}Meta } from "./${name}.meta";`,
+);
 insertBefore("src/registry/meta.ts", "// @new-meta", `${camelName}Meta,`);
-insertBefore("src/registry/index.ts", "// @new-import", `import { ${camelName} } from "./${name}";`);
+insertBefore(
+  "src/registry/index.ts",
+  "// @new-import",
+  `import { ${camelName} } from "./${name}";`,
+);
 insertBefore("src/registry/index.ts", "// @new-entry", `${camelName},`);
 
-console.log(`✔ components/${name} ساخته شد و در سایت ثبت شد (src/registry/${name}.tsx).\n`);
-console.log("اجرا:");
+console.log(`✔ components/${name} created and registered in the site (src/registry/${name}.tsx).\n`);
+console.log("Run:");
 console.log(`  pnpm dev  → http://localhost:3000/components/${name}`);
