@@ -107,7 +107,7 @@ export const defaults: TerminalSettings = {
       "        ether b8:27:eb:c4:f1:2a  txqueuelen 1000",
       "        RX 84291 packets / 112 MB      TX 41033 packets / 6.2 MB",
       "",
-      "uxu0:  flags=4163<UP,RUNNING>  mtu 1420   (Freedom Relay)",
+      "uxu0:  flags=4163<UP,RUNNING>  mtu 1420   (UXU-Ilhan virtual interface)",
       "        inet 10.66.0.2  netmask 255.255.255.0",
       "",
       "lo:    flags=73<UP,LOOPBACK,RUNNING>  mtu 65536",

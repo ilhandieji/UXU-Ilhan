@@ -52,7 +52,7 @@ inst.destroy();
 
 ## توسعه
 
-`pnpm dev:react` یا `pnpm dev:vanilla` ← `?c=__name__`
+`pnpm dev` ← `http://localhost:3000/components/__name__` (تب React / Vanilla، پنل Customize، Copy)
 
 ## محدودیت‌ها
 

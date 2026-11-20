@@ -4,7 +4,7 @@
 
 ## معماری
 
-- مدل **copy-paste** (مثل shadcn/ui): کامپوننت‌ها پکیج نیستند، فایل‌اند و مستقیم در پروژه‌ی دیگر کپی می‌شوند. یک `package.json` در ریشه فقط برای Playground و type-check.
+- مدل **copy-paste** (مثل shadcn/ui): کامپوننت‌ها پکیج نیستند، فایل‌اند و مستقیم در پروژه‌ی دیگر کپی می‌شوند. یک `package.json` در ریشه برای سایت Playground (Next.js در `src/`) و type-check؛ سایت از کامپوننت‌ها import می‌کند، هرگز برعکس.
 - هر کامپوننت دو نسخه‌ی مستقل دارد: `react` (TSX) و `vanilla` (TypeScript بدون فریم‌ورک). بین آن‌ها import اجرایی یا Wrapper نیست.
 - ساختار هر کامپوننت با `pnpm new <name>` ساخته می‌شود (ببین [DEVELOPMENT](DEVELOPMENT.md)):
 
@@ -35,7 +35,7 @@ components/<name>/
 
 ## Tailwind-only
 
-استایل فقط با Tailwind v4؛ فایل `.css`، `<style>` و `@apply` در پوشه‌ی کامپوننت ممنوع. استثنا: فایل با خط اول `/* tailwind-exception: دلیل */`. تنها CSS معمولی `playground/*/index.css` است. پروژه‌ی مقصد Tailwind v4 دارد. بررسی: `pnpm check:css`. جزئیات: `.claude/rules/tailwind.md`.
+استایل فقط با Tailwind v4؛ فایل `.css`، `<style>` و `@apply` در پوشه‌ی کامپوننت ممنوع. استثنا: فایل با خط اول `/* tailwind-exception: دلیل */`. تنها CSS معمولی `src/app/globals.css` سایت است. پروژه‌ی مقصد Tailwind v4 دارد. بررسی: `pnpm check:css`. جزئیات: `.claude/rules/tailwind.md`.
 
 - تغییر runtime بدون remount و بدون از دست رفتن state؛ Option نامعتبر → پیش‌فرض.
 
@@ -46,7 +46,7 @@ React: `<X {...options} />` (`'use client'`، سازگار با SSR)
 
 ## Dependencyها
 
-پیش‌فرض بدون Dependency (غیر از Tailwind v4 و React). نصب برای Playground در ریشه (`pnpm add -D`)؛ نیاز پروژه‌ی مقصد در «نیازمندی‌ها»ی README کامپوننت.
+پیش‌فرض بدون Dependency (غیر از Tailwind v4 و React). نصب برای سایت در ریشه (`pnpm add`)؛ نیاز پروژه‌ی مقصد در «نیازمندی‌ها»ی README کامپوننت.
 
 ## چک‌لیست تحویل
 
@@ -55,5 +55,6 @@ React: `<X {...options} />` (`'use client'`، سازگار با SSR)
 - [ ] «نیازمندی‌ها» در README ثبت شده و فایل‌ها بدون تغییر کپی‌شدنی‌اند
 - [ ] دو نسخه نام‌ها و رفتار یکسان دارند
 - [ ] Accessibility/Responsive بررسی شده
-- [ ] `pnpm build` پاس می‌شود و دمو در هر دو Playground دیده شده
+- [ ] ورودی `src/registry/<name>.tsx` کنترل‌های واقعی کامپوننت را دارد
+- [ ] `pnpm build` پاس می‌شود و کامپوننت در سایت (تب React و Vanilla) دیده و کاستوم شده
 - [ ] cleanup (`destroy`/unmount) کامل است

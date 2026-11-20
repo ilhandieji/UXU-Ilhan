@@ -1,19 +1,18 @@
 # نقشه‌ی راه
 
-## Phase 1 — توسعه کامپوننت (فعلی)
+## Phase 1 — توسعه کامپوننت
 
-- [x] Workspace و اسکفولد Terminal (Vanilla/React)
-- [x] rules، agents و مستندات پایه
-- [x] spec و تمپلیت Terminal
-- [x] سیستم `pnpm new`، Playground مرکزی و ساختار دوفایلی copy-paste
-- [ ] پیاده‌سازی Terminal Vanilla
-- [ ] پیاده‌سازی Terminal React
-- [ ] تست و بررسی parity
+- [x] اسکفولد، rules، agents و مستندات پایه
+- [x] سیستم `pnpm new` و ساختار copy-paste
+- [x] Terminal (React + Vanilla) با ۲۷ کامند
 - [ ] کامپوننت‌های بعدی
 
-## Phase 2 — Playground Platform (آینده، خارج از محدوده)
+## Phase 2 — سایت Playground (فعلی)
 
-سایت مرکزی، Live Preview، تغییر Token/Props از UI، نمایش کد. فقط با درخواست صریح شروع شود. (کامپوننت‌ها از الان tokenized هستند تا این فاز بعداً ممکن باشد؛ زیرساخت آن ساخته نمی‌شود.)
+- [x] سایت Next.js + shadcn/ui (فقط dark) در `src/`؛ جایگزین playground قبلی Vite
+- [x] مرور کامپوننت‌ها، Live Preview (React و Vanilla)، پنل Customize
+- [x] تب Code با `<name>.config.ts` سفارشی‌شده و Copy
+- [ ] بقیه فقط با درخواست صریح (مثلاً جستجو، مقایسه‌ی کد React/Vanilla کنار هم)
 
 ## Phase 3 — Distribution (آینده)
 

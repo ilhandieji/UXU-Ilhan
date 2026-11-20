@@ -5,4 +5,4 @@
 - نیازمندی پایه: Tailwind CSS v4؛ React برای نسخه React. پیش‌فرض: بدون Dependency اضافه؛ قبل از افزودن دلیل فنی بیاور.
 - `pnpm-lock.yaml` را دستی ویرایش نکن.
 - مستندات: هر کامپوننت یک `README.md` (معرفی، نمونه استفاده، روش کپی + نیازمندی‌ها، Options، Theme Tokens، محدودیت‌ها). docs/ فقط سه فایل: COMPONENT-STANDARD، DEVELOPMENT، ROADMAP. تغییر معماری/API ⇒ مستندات همان لحظه. زبان فارسی؛ کد و دستورها انگلیسی.
-- بررسی پیش از اتمام: `pnpm build` (check:css + tsc + build هر دو Playground) و دیدن کامپوننت در `pnpm dev:react` و `pnpm dev:vanilla`؛ موارد بررسی‌نشده را گزارش کن.
+- بررسی پیش از اتمام: `pnpm build` (check:css + tsc + next build) و دیدن کامپوننت در سایت (`pnpm dev`، تب React و Vanilla)؛ موارد بررسی‌نشده را گزارش کن.

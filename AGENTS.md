@@ -26,15 +26,13 @@
 
 - **Distribution Model:** copy-paste (مثل shadcn/ui) — هر کامپوننت چند فایل است که مستقیم در پروژه‌ی دیگر کپی می‌شود، نه پکیج npm
 
-- **Development Server:** Vite
+- **Playground:** سایت Next.js + shadcn/ui (فقط dark) در `src/` — مرور، کاستوم و کپی کامپوننت‌ها
 
 ## Current Development Phase
 
-**Phase 1 — Component Development**
+**Phase 2 — Component Playground Platform** (به درخواست صریح کاربر شروع شد)
 
-در حال حاضر هدف فقط توسعه کامپوننت‌ها و آزمایش مستقل آن‌ها است.
-
-هیچ وب‌سایت مرکزی، داشبورد، گالری کامپوننت یا سیستم مدیریت آنلاین در این فاز ساخته نمی‌شود.
+توسعه‌ی کامپوننت‌ها ادامه دارد؛ سایت Playground (Next.js) فقط برای مرور، کاستوم و کپی آن‌هاست و کامپوننت‌ها هیچ وابستگی‌ای به سایت ندارند.
 
 اولین کامپوننت پروژه Terminal است.
 
@@ -46,7 +44,8 @@
 
 - Repository یک پکیج ساده با **یک `package.json` در ریشه** است؛ Workspace و `package.json` جداگانه برای کامپوننت‌ها وجود ندارد. کامپوننت‌ها پکیج نیستند، **فایل** هستند.
 - هر کامپوننت دو پیاده‌سازی کاملاً مجزا دارد: Vanilla و React.
-- ابزار توسعه (Vite، TypeScript، Tailwind، React برای Playground) فقط یک‌بار در ریشه نصب می‌شود.
+- ابزار توسعه (Next.js، TypeScript، Tailwind، shadcn/ui برای سایت Playground) فقط یک‌بار در ریشه نصب می‌شود.
+- دو بخش جدا: `components/` = کتابخانه (فایل‌های کپی‌شدنی)، `src/` = سایت Playground. سایت از کتابخانه import می‌کند (`@lib/*`)، **هرگز برعکس**.
 - اصل **copy-paste:** هر فایل کامپوننت باید بدون تغییر در پروژه‌ی دیگری (Next.js، Vite، HTML ساده) قابل کپی و استفاده باشد؛ import داخلی بدون پسوند (`./terminal.config`) و بدون alias.
 
 ## 1.2 Component Directory Structure
@@ -68,7 +67,7 @@ components/<name>/
 - نام فایل تنظیمات شامل نام کامپوننت است تا چند کامپوننت در یک پوشه‌ی پروژه‌ی اصلی تداخل نداشته باشند.
 - **استایل فقط با Tailwind CSS v4** (قانون §5.3)؛ فایل CSS ندارد.
 - کامپوننت‌ها ساده، تک‌منظوره و خوانا (به سبک shadcn/ui و reactbits.dev)؛ بدون `index.ts` واسط یا لایه‌ی انتزاعی.
-- `package.json`، `tsconfig`، `vite.config`، `index.html` و Playground **داخل پوشه‌ی کامپوننت نیستند** (Playground مرکزی §4).
+- `package.json`، `tsconfig` و فایل‌های سایت **داخل پوشه‌ی کامپوننت نیستند** (Playground §4).
 - **کامپوننت جدید همیشه با `pnpm new <kebab-name>` ساخته می‌شود** (از `templates/component/`)؛ دستی ساختن ممنوع. اگر قالب نیاز به تغییر دارد، خود قالب را اصلاح کن.
 - قاعده‌ی «بدون زیرپوشه» و Tailwind-only با `pnpm check:css` بررسی می‌شود.
 
@@ -86,7 +85,7 @@ components/<name>/
 
 - مستقل از پیاده‌سازی React.
 
-- قابل مشاهده در Playground مرکزی Vanilla (`pnpm dev:vanilla`).
+- قابل مشاهده و کاستوم در سایت Playground (تب Vanilla، `pnpm dev`).
 
 - امکان استفاده در پروژه‌های معمولی HTML و JavaScript.
 
@@ -100,7 +99,7 @@ components/<name>/
 
 - مستقل از پیاده‌سازی Vanilla.
 
-- قابل مشاهده در Playground مرکزی React (`pnpm dev:react`).
+- قابل مشاهده و کاستوم در سایت Playground (تب React، `pnpm dev`).
 
 - سازگاری با پروژه‌های React و Next.js.
 
@@ -140,26 +139,30 @@ components/<name>/
 
 ## 3.2 Root (Playground)
 
-- همه‌ی ابزارها و وابستگی‌ها فقط در `package.json` ریشه نصب می‌شوند (`devDependencies`)، چون فقط Playground و type-check از آن‌ها استفاده می‌کنند: `pnpm add -D <dep>`.
+- همه‌ی ابزارها و وابستگی‌ها فقط در `package.json` ریشه نصب می‌شوند (سایت Playground و type-check از آن‌ها استفاده می‌کنند).
 - Dependency اختصاصی یک کامپوننت هم در ریشه نصب و در README آن کامپوننت ثبت می‌شود.
 - `pnpm-lock.yaml` را دستی ویرایش نکن.
 
 ---
 
-# 4. Development Environment (Playground مرکزی)
+# 4. Development Environment (سایت Playground)
 
-`playground/` محیط محلی توسعه است: یک صفحه‌ی Vite با HMR که کامپوننت‌ها را هنگام نوشتن در مرورگر نشان می‌دهد. دو Playground مستقل وجود دارد:
+سایت Next.js (App Router) + shadcn/ui در `src/`، **فقط dark** (بدون سوییچ تم)، مثل reactbits.dev:
 
 ```
-playground/
-├── react/    index.html  main.tsx  demos.tsx  index.css  vite.config.ts
-└── vanilla/  index.html  main.ts   demos.ts   index.css  vite.config.ts
+src/
+├── app/                      # layout، صفحه‌ی خانه، components/[slug] (سورس‌ها هنگام build با fs خوانده می‌شوند)
+├── components/               # UI سایت: sidebar، studio، customize-panel، preview، code-view
+│   └── ui/                   # shadcn (فقط برای UI سایت)
+├── lib/customize-config.ts   # patch مقادیر literal در `<name>.config.ts`
+└── registry/                 # برای هر کامپوننت: `<name>.meta.ts` (server) + `<name>.tsx` (کنترل‌ها، preview، customize)
 ```
 
-- `pnpm dev:react` و `pnpm dev:vanilla` جداگانه اجرا و متوقف می‌شوند (Vanilla به React نیازی ندارد).
-- `demos.ts[x]` فهرست دموهای کامپوننت‌هاست؛ `pnpm new` ورودی جدید را خودکار اضافه می‌کند. انتخاب دمو با `?c=<name>`.
-- `index.css` تنها فایل CSS معمولی است (`@import "tailwindcss"; @source "../../components";`).
-- Playground صرفاً محیط آزمایش است و نباید به محصول، گالری یا وب‌سایت تبدیل شود (Phase 2).
+- `pnpm dev` (پورت 3000). صفحه‌ی هر کامپوننت: Preview زنده (React یا Vanilla)، پنل Customize (رنگ، فونت، قاب، متن، گزینه‌ها) و تب Code.
+- **Copy:** فایل‌های همان framework؛ `<name>.config.ts` با مقادیر انتخابی بازتولید می‌شود (فقط مقدارها؛ کامنت و ساختار حفظ می‌شود) تا کامپوننت بدون prop اضافه همان ظاهر را داشته باشد.
+- shadcn/ui فقط برای UI خود سایت است؛ کامپوننت‌های کتابخانه هرگز از shadcn یا فایل‌های سایت استفاده نمی‌کنند.
+- `src/app/globals.css` تنها فایل CSS معمولی است (`@import "tailwindcss"; @source "../../components";` + تم dark سایت).
+- `pnpm new` ورودی registry را هم می‌سازد و ثبت می‌کند؛ کنترل‌های پیش‌فرض را بعداً متناسب با کامپوننت کامل کن.
 
 ---
 
@@ -194,8 +197,8 @@ playground/
 - استایل هر کامپوننت و هر فایل **فقط با Tailwind CSS v4** نوشته می‌شود؛ در React اجباری و در Vanilla هم همان قانون (استثنا فقط وقتی Tailwind نمی‌تواند، مثل `@keyframes` سفارشی).
 - فایل `.css` در پوشه‌ی کامپوننت، تگ `<style>`، `@apply` و CSS-in-JS ممنوع. استثنای CSS خام: فایل با خط اول `/* tailwind-exception: <دلیل> */` و ثبت دلیل در README.
 - مقدار Dynamic (رنگ، فونت، اندازه، ...) = CSS Variable `--ux-<name>-*` ست‌شده از JS و مصرف‌شده با کلاس Tailwind (مثل `bg-(color:--ux-terminal-bg)`)؛ مقدار توکن‌ها در `<name>.config.ts`.
-- کلاس‌ها رشته‌ی کامل و استاتیک باشند. تنها CSS معمولی: `playground/*/index.css`. پروژه‌ی مقصد باید Tailwind v4 داشته باشد و مسیر کامپوننت را اسکن کند.
-- `tailwindcss` و `@tailwindcss/vite` در devDependencies ریشه.
+- کلاس‌ها رشته‌ی کامل و استاتیک باشند. تنها CSS معمولی: `src/app/globals.css` (سایت). پروژه‌ی مقصد باید Tailwind v4 داشته باشد و مسیر کامپوننت را اسکن کند.
+- `tailwindcss` و `@tailwindcss/postcss` در devDependencies ریشه.
 - بررسی خودکار: `pnpm check:css` (بخشی از `pnpm build`). جزئیات: `.claude/rules/tailwind.md`.
 
 ## 5.1 Vanilla Compatibility
@@ -233,7 +236,7 @@ playground/
 ```
 docs/
 ├── COMPONENT-STANDARD.md   # معماری + استاندارد + قرارداد Dynamic
-├── DEVELOPMENT.md          # Playground، pnpm new، Dependencyها
+├── DEVELOPMENT.md          # سایت Playground، pnpm new، Dependencyها
 └── ROADMAP.md
 ```
 
@@ -259,7 +262,7 @@ docs/
 
 - رفتارهای اصلی کامپوننت تست شوند.
 
-حداقل بررسی: `pnpm build` (شامل `check:css` و `tsc`) و دیدن کامپوننت در هر دو Playground. ابزار تست فقط وقتی تست واقعی نوشته می‌شود اضافه شود (در ریشه)، و فایل تست کنار کامپوننت قرار نمی‌گیرد مگر با هماهنگی.
+حداقل بررسی: `pnpm build` (شامل `check:css`، `tsc` و `next build`) و دیدن کامپوننت در سایت (تب React و Vanilla). ابزار تست فقط وقتی تست واقعی نوشته می‌شود اضافه شود (در ریشه)، و فایل تست کنار کامپوننت قرار نمی‌گیرد مگر با هماهنگی.
 
 ---
 
@@ -269,23 +272,23 @@ docs/
 
 ```
 ilhan-ui/
-├── components/<name>/     # فقط فایل‌های کامپوننت (§1.2)
-├── playground/            # react/ و vanilla/ (§4)
-├── templates/component/   # قالب pnpm new
+├── components/<name>/     # کتابخانه: فقط فایل‌های کامپوننت (§1.2)
+├── src/                   # سایت Playground (Next.js + shadcn، §4)
+├── templates/             # component/ (قالب کامپوننت) · registry/ (قالب ورودی سایت)
 ├── scripts/               # new-component.mjs · check-tailwind.mjs
 ├── docs/                  # COMPONENT-STANDARD, DEVELOPMENT, ROADMAP
-├── package.json  tsconfig.json  pnpm-lock.yaml
+├── package.json  tsconfig.json  next.config.ts  postcss.config.mjs  components.json
 ├── AGENTS.md  CLAUDE.md  README.md  .gitignore
 └── .claude/{rules,agents}
 ```
 
-با اضافه شدن کامپوننت‌های آینده، فقط فولدر مربوط به آن‌ها به `components/` (و یک ورودی دمو به Playground) اضافه می‌شود.
+با اضافه شدن کامپوننت‌های آینده، فولدر آن در `components/` و ورودی registry آن در `src/registry/` (با `pnpm new`) اضافه می‌شود.
 
 ---
 
 # 9. Development Roadmap
 
-## Phase 1 — Component Development (Current)
+## Phase 1 — Component Development
 
 هدف: ایجاد زیرساخت و توسعه اولین کامپوننت.
 
@@ -307,11 +310,9 @@ ilhan-ui/
 
 در این فاز فقط روی توسعه کامپوننت‌ها تمرکز کن.
 
-## Phase 2 — Component Playground Platform (Future)
+## Phase 2 — Component Playground Platform (Current)
 
-این فاز فعلاً خارج از محدوده توسعه است.
-
-قابلیت‌های احتمالی:
+شروع‌شده: سایت Next.js + shadcn (dark-only) با مرور، Live Preview، کاستوم و کپی. قابلیت‌های باقی‌مانده فقط با درخواست صریح:
 
 - وب‌سایت مرکزی نمایش کامپوننت‌ها.
 
@@ -329,7 +330,7 @@ ilhan-ui/
 
 - انتخاب نسخه و نوع Styling.
 
-تا زمانی که کاربر صریحاً شروع این فاز را درخواست نکرده، هیچ‌کدام از این قابلیت‌ها را پیاده‌سازی نکن.
+موارد بالا که هنوز ساخته نشده‌اند را بدون درخواست صریح پیاده‌سازی نکن.
 
 ## Phase 3 — Distribution (Future)
 
@@ -353,7 +354,7 @@ ilhan-ui/
 
 2. برای قابلیت‌های آینده زودتر از موعد زیرساخت نساز.
 
-3. هیچ وب‌سایت مرکزی یا داشبوردی در Phase 1 ایجاد نکن.
+3. سایت Playground فقط ابزار مرور/کاستوم/کپی است؛ کامپوننت‌ها هرگز به `src/` وابسته نشوند.
 
 4. هیچ کامپوننت نمونه اضافی برای پر کردن Repository نساز.
 
@@ -363,7 +364,7 @@ ilhan-ui/
 
 7. فایل‌های کامپوننت را copy-paste-پذیر نگه دار (بدون زیرپوشه، بدون alias، بدون وابستگی به فایل خارج از پوشه‌ی همان نسخه).
 
-8. Playground React و Vanilla باید مستقلاً قابل اجرا باشند.
+8. هر کامپوننت باید در سایت هم در تب React و هم Vanilla کار کند.
 
 9. کدهای موجود را بدون بررسی کامل تغییر نده.
 
@@ -401,7 +402,7 @@ ilhan-ui/
 
 پس از اتمام:
 
-- `pnpm build` و هر دو Playground را بررسی کن.
+- `pnpm build` و صفحه‌ی کامپوننت در سایت (React و Vanilla) را بررسی کن.
 
 - خطاهای مربوط به Build و Runtime را برطرف کن.
 

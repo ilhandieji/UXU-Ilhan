@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // استفاده: pnpm new <kebab-case-name>
-// کپی templates/component به components/<name>، جایگزینی placeholderها و ثبت دمو در playground.
+// کپی templates/component به components/<name>، ساخت ورودی registry سایت (src/registry) و ثبت آن.
 import {
   cpSync,
   existsSync,
@@ -31,7 +31,9 @@ const pascal = name
   .split("-")
   .map((p) => p[0].toUpperCase() + p.slice(1))
   .join("");
-const fill = (text) => text.replaceAll("__name__", name).replaceAll("__Name__", pascal);
+const camelName = pascal[0].toLowerCase() + pascal.slice(1);
+const fill = (text) =>
+  text.replaceAll("__name__Meta", `${camelName}Meta`).replaceAll("__name__: RegistryEntry", `${camelName}: RegistryEntry`).replaceAll("__name__", name).replaceAll("__Name__", pascal);
 
 function walk(dir) {
   for (const entry of readdirSync(dir)) {
@@ -57,25 +59,16 @@ function insertBefore(file, marker, line) {
 cpSync(join(root, "templates", "component"), target, { recursive: true });
 walk(target);
 
-const key = name.includes("-") ? `'${name}'` : name;
-insertBefore(
-  "playground/vanilla/demos.ts",
-  "// @new-import",
-  `import { create${pascal} } from '../../components/${name}/vanilla/${name}';`,
-);
-insertBefore(
-  "playground/vanilla/demos.ts",
-  "// @new-demo",
-  `${key}: (el) => {\n    create${pascal}(el);\n  },`,
-);
-insertBefore(
-  "playground/react/demos.tsx",
-  "// @new-import",
-  `import { ${pascal} } from '../../components/${name}/react/${pascal}'`,
-);
-insertBefore("playground/react/demos.tsx", "// @new-demo", `${key}: () => <${pascal} />,`);
+// Playground site entry: server-safe meta + client controls/preview
+for (const file of ["__name__.meta.ts", "__name__.tsx"]) {
+  const out = join(root, "src", "registry", fill(file));
+  writeFileSync(out, fill(readFileSync(join(root, "templates", "registry", file), "utf8")));
+}
+insertBefore("src/registry/meta.ts", "// @new-meta-import", `import { ${camelName}Meta } from "./${name}.meta";`);
+insertBefore("src/registry/meta.ts", "// @new-meta", `${camelName}Meta,`);
+insertBefore("src/registry/index.ts", "// @new-import", `import { ${camelName} } from "./${name}";`);
+insertBefore("src/registry/index.ts", "// @new-entry", `${camelName},`);
 
-console.log(`✔ components/${name} ساخته شد و در playground ثبت شد.\n`);
+console.log(`✔ components/${name} ساخته شد و در سایت ثبت شد (src/registry/${name}.tsx).\n`);
 console.log("اجرا:");
-console.log(`  pnpm dev:react    → ?c=${name}`);
-console.log(`  pnpm dev:vanilla  → ?c=${name}`);
+console.log(`  pnpm dev  → http://localhost:3000/components/${name}`);

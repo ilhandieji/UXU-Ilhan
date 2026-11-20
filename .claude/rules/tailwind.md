@@ -2,7 +2,6 @@
 paths:
   - "components/**"
   - "templates/**"
-  - "playground/**"
 ---
 
 # Tailwind-only
@@ -17,6 +16,6 @@ paths:
   `bg-(color:--ux-x-bg)` · `text-(color:--ux-x-fg)` · `border-(color:--ux-x-border)` · `font-(family-name:--ux-x-font-family)` · `text-(length:--ux-x-font-size)` · `p-(--ux-x-padding)` · `rounded-(--ux-x-radius)` · `[box-shadow:var(--ux-x-shadow)]`.
 - انیمیشن/افکت: اول کلاس‌های Tailwind (`animate-*`, `transition-*`)، بعد `canvas`/Web Animations API.
 - **استثنای CSS خام:** فقط اگر Tailwind نمی‌تواند (مثلاً `@keyframes` سفارشی): فایل `<name>.css` کنار کامپوننت با خط اول `/* tailwind-exception: <دلیل> */` و ثبت دلیل در README کامپوننت.
-- تنها فایل CSS معمولی: `playground/*/index.css` (`@import "tailwindcss"; @source "../../components";`).
+- تنها فایل CSS معمولی: `src/app/globals.css` سایت (`@import "tailwindcss"; @source "../../components";` + تم dark).
 - پروژه‌ی مقصد Tailwind v4 دارد؛ اگر فایل کپی‌شده خارج از مسیرهای اسکن خودکار است، با `@source` اضافه شود.
 - بررسی خودکار: `pnpm check:css` (در `pnpm build` هم اجرا می‌شود).

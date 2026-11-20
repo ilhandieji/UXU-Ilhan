@@ -60,7 +60,7 @@ term.destroy();
 
 ## توسعه
 
-`pnpm dev:react` یا `pnpm dev:vanilla` ← `?c=terminal`
+`pnpm dev` ← `http://localhost:3000/components/terminal` (تب React / Vanilla، پنل Customize، Copy)
 
 ## کامندها
 
