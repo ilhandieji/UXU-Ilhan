@@ -4,10 +4,11 @@
   "description": "Personal copy-paste component library (React + Vanilla) with a Next.js playground",
   "scripts": {
     "dev": "next dev",
-    "build": "pnpm check:css && pnpm typecheck && next build",
+    "build": "pnpm check:css && pnpm check:docs && pnpm typecheck && next build",
     "start": "next start",
-    "new": "node scripts/new-component.mjs",
-    "check:css": "node scripts/check-tailwind.mjs",
+    "new": "node scripts/new-component.ts",
+    "check:css": "node scripts/check-tailwind.ts",
+    "check:docs": "node scripts/check-docs.ts",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
@@ -15,6 +16,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": ">=22.18"
+  },
   "devEngines": {
     "packageManager": {
       "name": "pnpm",

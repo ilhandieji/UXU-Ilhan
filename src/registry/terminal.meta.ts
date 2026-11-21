@@ -12,7 +12,7 @@ export const terminalMeta: ComponentMeta = {
   configFile: "terminal.config.ts",
   requirements: [
     'Tailwind CSS v4. If the folder you copy into is not scanned automatically, add `@source "./path/to/folder";` to your CSS.',
-    "React version: react 19+, client component (works in Next.js as is).",
+    "React version: react 19.3+ (latest stable: 19.3.1), client component (works in Next.js as is).",
     "Pass `pages` and `navigate` (e.g. `router.push`) so `cd`, `ls` and `sitemap` know your routes.",
     "A non-system font (e.g. Fira Code) must be loaded in your project.",
   ],

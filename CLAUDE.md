@@ -8,7 +8,7 @@
 
 - **Vanilla با TypeScript (`.ts`) نوشته می‌شود** (بدون TSX و بدون React). عبارت «JavaScript استاندارد» در AGENTS.md به معنی «بدون فریم‌ورک» است؛ خروجی build، JS استاندارد است.
 - **اصل Dynamic (اجباری برای هر کامپوننت):** رنگ، فونت، اندازه، variant و هر جنبه‌ی قابل‌تغییر دیگر باید از طریق Design Token (CSS Variables) و Options/Props قابل تنظیم باشد. جزئیات: `.claude/rules/theming-and-dynamic.md`. این اصل ساخت پلتفرم Playground (Phase 2) نیست.
-- Terminal: کانسپت A (Window، سبز ماتریکسی) با ۲۷ کامند داخلی پیاده شده؛ `terminal.commands.ts` فایل سوم مجاز هر نسخه است (بیش از ۳۰۰ خط). Matrix Rain، تم‌ها و variantهای بعدی فقط با درخواست صریح.
+- Terminal: کانسپت A (Window، سبز ماتریکسی) با ۲۷ کامند داخلی پیاده شده؛ فایل هم‌سطح اضافه (مثل `terminal.commands.ts`، `<name>.engine.ts`) مجاز است؛ طول فایل معیار نیست. Matrix Rain، تم‌ها و variantهای بعدی فقط با درخواست صریح.
 
 - **سایت Playground** (Next.js + shadcn در `src/`، فقط dark): مرور، کاستوم و کپی کامپوننت‌ها. shadcn فقط برای UI سایت است و کامپوننت‌ها به سایت وابسته نیستند (AGENTS.md §4).
 
@@ -29,11 +29,11 @@
 
 ## ساخت کامپوننت جدید
 
-`pnpm new <kebab-name>` (قالب: `templates/component/`) — هر نسخه فقط دو فایل بدون زیرپوشه: `<Name>.tsx`/`<name>.ts` + `<name>.config.ts`؛ کپی‌شدنی مثل shadcn/ui. استایل **فقط Tailwind v4** (`pnpm check:css`). ورودی سایت (`src/registry/<name>.meta.ts` + `<name>.tsx`) خودکار ساخته و ثبت می‌شود.
+`pnpm new <kebab-name>` (قالب: `templates/component/`) — هر نسخه فقط دو فایل بدون زیرپوشه: `<Name>.tsx`/`<name>.ts` + `<name>.config.ts`؛ کپی‌شدنی مثل shadcn/ui. استایل **فقط Tailwind v4** (`pnpm check:css`). ورودی سایت (`src/registry/<name>.meta.ts` + `<name>.tsx`)، لینک در `README.md` ریشه و ردیف `docs/ROADMAP.md` خودکار ساخته و ثبت می‌شود (هنگام اتمام تیک ROADMAP را بزن؛ تغییر نام/حذف کامپوننت = اصلاح دستی هر سه).
 
 ## دستورها
 
-`pnpm dev` (سایت Playground، پورت 3000) · `pnpm new <name>` · `pnpm build` (check:css + typecheck + next build)
+`pnpm dev` (سایت Playground، پورت 3000) · `pnpm new <name>` · `pnpm build` (check:css + check:docs + typecheck + next build)
 
 ## جریان کار پیشنهادی
 

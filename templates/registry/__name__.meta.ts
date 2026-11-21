@@ -9,5 +9,5 @@ export const __name__Meta: ComponentMeta = {
     vanilla: ["__name__.ts", "__name__.config.ts"],
   },
   configFile: "__name__.config.ts",
-  requirements: ["Tailwind CSS v4.", "React version: react 19+."],
+  requirements: ["Tailwind CSS v4.", "React version: react 19.3+ (latest stable: 19.3.1)."],
 };

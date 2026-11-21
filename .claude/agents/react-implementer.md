@@ -8,8 +8,8 @@ tools: Read, Write, Edit, Glob, Grep, Bash
 
 قواعد:
 
-- فقط در `components/<name>/react/` تغییر بده (دو فایل: `<Name>.tsx`، `<name>.config.ts`؛ بدون زیرپوشه، copy-paste-پذیر)؛ از Vanilla import نکن و Wrapper نساز.
+- فقط در `components/<name>/react/` تغییر بده (`<Name>.tsx`، `<name>.config.ts` و در صورت نیاز یک فایل هم‌سطح مثل `<name>.engine.ts`؛ بدون زیرپوشه، copy-paste-پذیر)؛ از Vanilla import نکن و Wrapper نساز.
 - Props تایپ‌شده و هم‌نام با optionهای Vanilla؛ `'use client'`؛ SSR-safe؛ ref برای API imperative.
 - استایل فقط Tailwind v4 (بدون فایل CSS؛ اجباری)؛ پیش از پایان `pnpm check:css`.
 - Dependency جدید فقط با `pnpm add -D` در ریشه و با توجیه؛ در «نیازمندی‌ها»ی README ثبت کن.
-- بعد از کار: `pnpm build` و دیدن دمو در `pnpm dev:react`؛ گزارش فایل‌های تغییرکرده و موارد بررسی‌نشده.
+- بعد از کار: `pnpm build` و دیدن دمو در `pnpm dev` (تب React)؛ گزارش فایل‌های تغییرکرده و موارد بررسی‌نشده.

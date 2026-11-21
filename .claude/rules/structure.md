@@ -8,8 +8,8 @@ paths:
 # ساختار و استقلال کامپوننت‌ها
 
 - هدف: **copy-paste** (مثل shadcn/ui). هر فایل کامپوننت باید بدون تغییر در پروژه‌ی دیگری (Next.js، Vite، HTML ساده) کپی و استفاده شود.
-- ساختار: `components/<name>/{README.md, react/{<Name>.tsx, <name>.config.ts}, vanilla/{<name>.ts, <name>.config.ts}}`.
-- **هر نسخه دقیقاً دو فایل، بدون زیرپوشه** (`src/` ممنوع)؛ بدون `package.json`/`tsconfig`/فایل‌های سایت در پوشه‌ی کامپوننت. فایل بالای ~۳۰۰ خط ⇒ یک فایل هم‌سطح.
+- ساختار: `components/<name>/{README.md, react/{<Name>.tsx, <name>.config.ts}, vanilla/{<name>.ts, <name>.config.ts}}` (+ فایل هم‌سطح اختیاری در هر نسخه).
+- **هر نسخه پایه‌اش دو فایل است (کامپوننت + config)، بدون زیرپوشه** (`src/` ممنوع)؛ بدون `package.json`/`tsconfig`/فایل‌های سایت در پوشه‌ی کامپوننت. فایل هم‌سطح اضافه (مثل `terminal.commands.ts`، `<name>.engine.ts`) فقط وقتی ساختار کامپوننت لازم دارد؛ طول فایل معیار نیست.
 - importهای داخلی نسبی و بدون پسوند (`./terminal.config`)؛ بدون alias (`@/...`) و بدون import از بیرون پوشه‌ی همان نسخه.
 - کامپوننت جدید فقط با `pnpm new <kebab-name>`؛ تغییر ساختار همه = اصلاح `templates/component/`.
 - کد ساده و خوانا؛ بدون `index.ts` واسط و انتزاع زودهنگام. **کامنت‌ها فقط انگلیسی.**

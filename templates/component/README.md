@@ -14,7 +14,7 @@
 ## نیازمندی‌ها
 
 - Tailwind CSS v4 (اگر مسیر کپی را خودکار اسکن نمی‌کند: `@source "./components/ui";`)
-- React: `react` ≥ 18 (Next.js: آماده با `'use client'`)
+- React: `react` ≥ 19.3 (آخرین نسخه‌ی stable: 19.3.1؛ `ref` به‌صورت prop مستقیم)؛ آماده‌ی Next.js با `'use client'`
 
 ## استفاده
 

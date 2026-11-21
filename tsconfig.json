@@ -16,6 +16,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "erasableSyntaxOnly": true,
     "plugins": [{ "name": "next" }],
     "paths": {
       "@/*": ["./src/*"],
@@ -27,6 +28,7 @@
     "src",
     "components",
     "templates/component",
+    "scripts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Usage: pnpm new <kebab-case-name>
-// Copies templates/component to components/<name>, creates the site registry entry (src/registry) and registers it.
+// Copies templates/component to components/<name>, creates the site registry entry (src/registry) and registers it,
+// then adds the component to the root README list and docs/ROADMAP.md.
 import {
   cpSync,
   existsSync,
@@ -10,10 +11,9 @@ import {
   statSync,
   writeFileSync,
 } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const root = join(import.meta.dirname, "..");
 const name = process.argv[2];
 
 if (!name || !/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/.test(name)) {
@@ -32,14 +32,14 @@ const pascal = name
   .map((p) => p[0].toUpperCase() + p.slice(1))
   .join("");
 const camelName = pascal[0].toLowerCase() + pascal.slice(1);
-const fill = (text) =>
+const fill = (text: string): string =>
   text
     .replaceAll("__name__Meta", `${camelName}Meta`)
     .replaceAll("__name__: RegistryEntry", `${camelName}: RegistryEntry`)
     .replaceAll("__name__", name)
     .replaceAll("__Name__", pascal);
 
-function walk(dir) {
+function walk(dir: string): void {
   for (const entry of readdirSync(dir)) {
     const path = join(dir, entry);
     if (statSync(path).isDirectory()) {
@@ -52,7 +52,7 @@ function walk(dir) {
 }
 
 /** Inserts a line above the marker line (keeping its indentation) */
-function insertBefore(file, marker, line) {
+function insertBefore(file: string, marker: string, line: string): void {
   const path = join(root, file);
   const text = readFileSync(path, "utf8");
   const match = text.match(new RegExp(`^([ \\t]*)${marker}$`, "m"));
@@ -81,6 +81,33 @@ insertBefore(
 );
 insertBefore("src/registry/index.ts", "// @new-entry", `${camelName},`);
 
-console.log(`✔ components/${name} created and registered in the site (src/registry/${name}.tsx).\n`);
+// Repo docs: root README component list and ROADMAP entry (the docs check fails if either is missing)
+const title = name
+  .split("-")
+  .map((p) => p[0].toUpperCase() + p.slice(1))
+  .join(" ");
+const readmePath = join(root, "README.md");
+const readme = readFileSync(readmePath, "utf8");
+const listLine = /^(- کامپوننت‌ها:.*)$/m;
+if (!listLine.test(readme)) throw new Error("Component list line not found in README.md");
+writeFileSync(
+  readmePath,
+  readme.replace(listLine, `$1 · [${title}](components/${name}/README.md)`),
+);
+const roadmapPath = join(root, "docs", "ROADMAP.md");
+const roadmap = readFileSync(roadmapPath, "utf8");
+const nextLine = /^- \[ \] کامپوننت‌های بعدی$/m;
+if (!nextLine.test(roadmap)) throw new Error("Placeholder line not found in docs/ROADMAP.md");
+writeFileSync(
+  roadmapPath,
+  roadmap.replace(nextLine, `- [ ] ${title} (React + Vanilla)\n${"- [ ] کامپوننت‌های بعدی"}`),
+);
+
+console.log(
+  `✔ components/${name} created and registered in the site (src/registry/${name}.tsx).\n`,
+);
+console.log(
+  "Docs updated: README.md (component list) and docs/ROADMAP.md (tick the box when done).\n",
+);
 console.log("Run:");
 console.log(`  pnpm dev  → http://localhost:3000/components/${name}`);

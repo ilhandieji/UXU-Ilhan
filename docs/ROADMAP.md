@@ -6,6 +6,7 @@
 - [x] سیستم `pnpm new` و ساختار copy-paste
 - [x] Terminal (React + Vanilla) با ۲۷ کامند
 - [x] Glow Cursor (React + Vanilla)، پورت از React Bits با ۱۱ preset و قابلیت‌های اضافه
+- [x] Orbit Images (React + Vanilla)، پورت از React Bits با چرخ موس، scroll link، tilt و ۱۱ preset
 - [ ] کامپوننت‌های بعدی
 
 ## Phase 2 — سایت Playground (فعلی)

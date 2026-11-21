@@ -3,15 +3,14 @@
 //  1) Tailwind-only: no CSS files (unless the first line is `/* tailwind-exception: reason */`) and no <style> tags.
 //  2) No subfolders: each version (react/ and vanilla/) holds only files, no src/ or other folders.
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { dirname, join, relative } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join, relative } from "node:path";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const root = join(import.meta.dirname, "..");
 const EXCEPTION = /^\s*\/\*\s*tailwind-exception:\s*\S+/;
 const IMPLS = ["react", "vanilla"];
-const errors = [];
+const errors: string[] = [];
 
-const dirsIn = (dir) =>
+const dirsIn = (dir: string): string[] =>
   existsSync(dir)
     ? readdirSync(dir)
         .map((n) => join(dir, n))
@@ -32,7 +31,9 @@ for (const dir of implDirs) {
     }
     const text = readFileSync(path, "utf8");
     if (entry.endsWith(".css") && !EXCEPTION.test(text.split("\n")[0])) {
-      errors.push(`${rel}: CSS files are not allowed (or start the file with /* tailwind-exception: reason */)`);
+      errors.push(
+        `${rel}: CSS files are not allowed (or start the file with /* tailwind-exception: reason */)`,
+      );
     }
     if (/\.(ts|tsx|js|jsx)$/.test(entry) && /<style[\s>]/.test(text)) {
       errors.push(`${rel}: <style> tags are not allowed`);

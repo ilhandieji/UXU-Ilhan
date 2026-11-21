@@ -8,9 +8,9 @@ tools: Read, Write, Edit, Glob, Grep, Bash
 
 قواعد:
 
-- فقط در `components/<name>/vanilla/` تغییر بده (دو فایل: `<name>.ts`، `<name>.config.ts`؛ بدون زیرپوشه، copy-paste-پذیر)؛ به React دست نزن و از آن import نکن.
+- فقط در `components/<name>/vanilla/` تغییر بده (`<name>.ts`، `<name>.config.ts` و در صورت نیاز یک فایل هم‌سطح مثل `<name>.engine.ts`؛ بدون زیرپوشه، copy-paste-پذیر)؛ به React دست نزن و از آن import نکن.
 - API: `createX(container, options)` با `update/destroy`؛ همه‌ی ظاهر از توکن‌ها (`--ux-*`)؛ بدون `innerHTML` با ورودی کاربر.
 - استایل فقط Tailwind v4 (بدون فایل CSS)؛ پیش از پایان `pnpm check:css`.
 - Dependency فقط با `pnpm add -D` در ریشه و با توجیه؛ در «نیازمندی‌ها»ی README ثبت کن.
-- بعد از کار: `pnpm build` و دیدن دمو در `pnpm dev:vanilla`؛ گزارش فایل‌های تغییرکرده و موارد بررسی‌نشده.
+- بعد از کار: `pnpm build` و دیدن دمو در `pnpm dev` (تب Vanilla)؛ گزارش فایل‌های تغییرکرده و موارد بررسی‌نشده.
 - اگر تغییر API/رفتار داده‌ای، آن را برای parity-reviewer/React یادداشت کن.

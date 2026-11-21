@@ -3,7 +3,7 @@
 کتابخانه‌ی شخصی کامپوننت‌های فرانت‌اند به سبک **copy-paste** (مثل shadcn/ui): هر کامپوننت در دو نسخه‌ی مستقل **React (TSX)** و **Vanilla (TypeScript)**، هر نسخه چند فایل کپی‌شدنی، استایل فقط Tailwind v4، و کاملاً قابل‌تنظیم (رنگ، فونت، اندازه، variant).
 
 - معماری و قواعد: [AGENTS.md](AGENTS.md) · [CLAUDE.md](CLAUDE.md) · [docs/](docs/)
-- کامپوننت‌ها: [Terminal](components/terminal/README.md)
+- کامپوننت‌ها: [Terminal](components/terminal/README.md) · [Glow Cursor](components/glow-cursor/README.md) · [Orbit Images](components/orbit-images/README.md)
 
 ## سایت Playground
 

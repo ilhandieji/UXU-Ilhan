@@ -2,7 +2,7 @@
 
 ## پیش‌نیاز
 
-Node.js و pnpm (نسخه‌ی `package.json` ریشه).
+Node.js ≥ 22.18 و pnpm (نسخه‌ی `package.json` ریشه). اسکریپت‌های `scripts/` به TypeScript (`.ts`) نوشته شده‌اند و Node آن‌ها را بدون ابزار اضافه اجرا می‌کند؛ فقط syntax قابل حذف مجاز است (`erasableSyntaxOnly` در `tsconfig.json`: بدون `enum`/`namespace`) و در `pnpm typecheck` بررسی می‌شوند.
 
 ```bash
 pnpm install
@@ -41,10 +41,11 @@ pnpm dev
 pnpm new image-card
 ```
 
-اسکریپت `scripts/new-component.mjs`:
+اسکریپت `scripts/new-component.ts`:
 
 1. `templates/component/` را به `components/image-card/` کپی و نام‌ها را جایگزین می‌کند (kebab-case؛ نام تکراری/نامعتبر رد می‌شود).
-2. از `templates/registry/` فایل‌های `src/registry/image-card.meta.ts` و `image-card.tsx` را می‌سازد و در `meta.ts` و `index.ts` (زیر خطوط `// @new-…`) ثبت می‌کند.
+2. در `README.md` ریشه (فهرست کامپوننت‌ها) لینک و در `docs/ROADMAP.md` یک ردیف `- [ ]` اضافه می‌کند؛ بعد از اتمام کامپوننت، تیک ROADMAP را بزن.
+3. از `templates/registry/` فایل‌های `src/registry/image-card.meta.ts` و `image-card.tsx` را می‌سازد و در `meta.ts` و `index.ts` (زیر خطوط `// @new-…`) ثبت می‌کند.
 
 بعد کنترل‌های `src/registry/<name>.tsx` را متناسب با Options و توکن‌های واقعی کامپوننت کامل کن. برای تغییر ساختار همه‌ی کامپوننت‌های آینده، خود `templates/` را اصلاح کن.
 
@@ -54,13 +55,13 @@ pnpm new image-card
 pnpm build
 ```
 
-= `check:css` (Tailwind-only و بدون زیرپوشه در کامپوننت‌ها) + `typecheck` (`tsc`) + `next build`.
+= `check:css` (Tailwind-only و بدون زیرپوشه در کامپوننت‌ها) + `check:docs` (هر کامپوننت در README ریشه، ROADMAP، README خودش و registry باشد) + `typecheck` (`tsc`) + `next build`.
 
 ## Dependencyها
 
 - یک `package.json` در ریشه؛ بدون workspace. نصب: `pnpm add <dep>` (سایت) یا `pnpm add -D <dep>` (ابزار).
 - کامپوننت‌ها پکیج نیستند؛ نیاز پروژه‌ی مقصد در بخش «نیازمندی‌ها» README هر کامپوننت ثبت می‌شود.
-- پیش‌فرض بدون Dependency اضافه برای کامپوننت‌ها (غیر از Tailwind v4 و React)؛ دلیل هر مورد در README کامپوننت.
+- پیش‌فرض بدون Dependency اضافه برای کامپوننت‌ها (غیر از Tailwind v4 و React ≥ 19.3؛ پروژه روی `^19.3.1` است، آخرین stable)؛ دلیل هر مورد در README کامپوننت.
 - `pnpm-lock.yaml` را دستی ویرایش نکن.
 
 ### ریشه

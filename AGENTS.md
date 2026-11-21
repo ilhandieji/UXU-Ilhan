@@ -63,7 +63,7 @@ components/<name>/
     └── <name>.config.ts
 ```
 
-- **هر نسخه دقیقاً دو فایل** (کامپوننت + `<name>.config.ts`) و **بدون هیچ زیرپوشه‌ای** (`src/` و ... ممنوع). فقط اگر فایلی واقعاً از حدود ۳۰۰ خط گذشت، یک فایل هم‌سطح کنارش اضافه شود.
+- **هر نسخه پایه‌اش دو فایل است** (کامپوننت + `<name>.config.ts`) و **بدون هیچ زیرپوشه‌ای** (`src/` و ... ممنوع). اگر ساختار کامپوننت واقعاً لازم دارد (مثل موتور یا کامندها)، یک فایل هم‌سطح دیگر مجاز است (مثل `terminal.commands.ts`، `<name>.engine.ts`)؛ باز هم بدون زیرپوشه؛ طول فایل معیار نیست.
 - نام فایل تنظیمات شامل نام کامپوننت است تا چند کامپوننت در یک پوشه‌ی پروژه‌ی اصلی تداخل نداشته باشند.
 - **استایل فقط با Tailwind CSS v4** (قانون §5.3)؛ فایل CSS ندارد.
 - کامپوننت‌ها ساده، تک‌منظوره و خوانا (به سبک shadcn/ui و reactbits.dev)؛ بدون `index.ts` واسط یا لایه‌ی انتزاعی.
@@ -134,7 +134,7 @@ components/<name>/
 ## 3.1 نیازمندی‌های کامپوننت
 
 - هر Dependency که کامپوننت در پروژه‌ی مقصد لازم دارد در بخش **«نیازمندی‌ها»** در README همان کامپوننت ثبت شود (نام، نسخه‌ی حداقل، کدام نسخه: Vanilla/React/هر دو).
-- نیازمندی پایه‌ی همه: Tailwind CSS v4؛ و برای React: `react` (و `'use client'` برای Next.js).
+- نیازمندی پایه‌ی همه: Tailwind CSS v4؛ و برای React: `react` ≥ 19.3 (آخرین stable: 19.3.1) با `'use client'` برای Next.js.
 - پیش‌فرض: بدون Dependency اضافه. قبل از افزودن، دلیل فنی و راه‌حل بدون کتابخانه را بسنج.
 
 ## 3.2 Root (Playground)
@@ -244,6 +244,8 @@ docs/
 
 محتوای این مستندات باید با معماری واقعی پروژه هماهنگ باشد.
 
+**فهرست‌های مرکزی:** با افزودن، تغییر نام یا حذف هر کامپوننت، این‌ها هم‌زمان به‌روز شوند: لینک کامپوننت در فهرست `- کامپوننت‌ها:` در `README.md` ریشه، ردیف آن در `docs/ROADMAP.md` (وقتی تمام شد تیک بخورد)، و `README.md` خود کامپوننت. `pnpm new` دو مورد اول را خودکار اضافه می‌کند؛ `pnpm check:docs` (بخشی از `pnpm build`) در صورت جا ماندن هر کدام شکست می‌خورد.
+
 ---
 
 # 7. Testing and Validation
@@ -277,7 +279,7 @@ ilhan-ui/
 ├── components/<name>/     # کتابخانه: فقط فایل‌های کامپوننت (§1.2)
 ├── src/                   # سایت Playground (Next.js + shadcn، §4)
 ├── templates/             # component/ (قالب کامپوننت) · registry/ (قالب ورودی سایت)
-├── scripts/               # new-component.mjs · check-tailwind.mjs
+├── scripts/               # new-component.ts · check-tailwind.ts · check-docs.ts (TypeScript، اجرا مستقیم با Node ≥ 22.18)
 ├── docs/                  # COMPONENT-STANDARD, DEVELOPMENT, ROADMAP
 ├── package.json  tsconfig.json  next.config.ts  postcss.config.mjs  components.json
 ├── AGENTS.md  CLAUDE.md  README.md  .gitignore
@@ -408,7 +410,7 @@ ilhan-ui/
 
 - خطاهای مربوط به Build و Runtime را برطرف کن.
 
-- README مربوطه را به‌روز کن.
+- README مربوطه را به‌روز کن، و فهرست کامپوننت‌ها در `README.md` ریشه و `docs/ROADMAP.md` را هم (`pnpm check:docs`).
 
 - نتیجه و فایل‌های تغییرکرده را گزارش بده.
 

@@ -12,7 +12,7 @@ tools: Read, Glob, Grep, WebFetch
 2. Options/Props با نوع، پیش‌فرض و اعتبارسنجی (مشترک بین Vanilla و React)
 3. جدول Design Tokens (`--ux-<component>-*`) و presetهای theme، variantها و sizeها
 4. رویدادها/callbackها و API imperative
-5. ساختار (فقط دو فایل: کامپوننت/`<name>.config.ts`، بدون زیرپوشه، copy-paste؛ استایل فقط Tailwind v4 بدون CSS؛ ساخت پایه با `pnpm new`)، Dependencyهای لازم (با توجیه؛ پیش‌فرض بدون Dependency)
+5. ساختار (کامپوننت + `<name>.config.ts` و در صورت نیاز فایل هم‌سطح مثل موتور، بدون زیرپوشه، copy-paste؛ استایل فقط Tailwind v4 بدون CSS؛ ساخت پایه با `pnpm new`)، Dependencyهای لازم (با توجیه؛ پیش‌فرض بدون Dependency)
 6. نکات Accessibility و محدودیت‌ها
 
 قواعد: Overengineering و Shared Layer زودهنگام ممنوع؛ قابلیت Phase 2 را طراحی نکن؛ هر چیز قابل‌تغییر را token/option کن. خروجی spec است نه کد.
