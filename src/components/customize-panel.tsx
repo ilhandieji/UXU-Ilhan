@@ -1,5 +1,8 @@
 "use client";
 
+import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
+import { ColorPicker } from "@/components/color-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -21,16 +24,16 @@ type Props = {
   onToken: (key: string, value: string) => void;
 };
 
-const HEX = /^#[0-9a-f]{6}$/i;
-
 function ControlRow({
   control,
   value,
   onChange,
+  themeColors,
 }: {
   control: Control;
   value: OptionValue;
   onChange: (value: OptionValue) => void;
+  themeColors: string[];
 }) {
   const id = `ctl-${control.key}`;
   const label = (
@@ -52,12 +55,11 @@ function ControlRow({
         <div className="flex items-center justify-between gap-3">
           {label}
           <div className="flex items-center gap-2">
-            <input
-              type="color"
-              aria-label={`${control.label} color`}
-              value={HEX.test(String(value)) ? String(value) : "#000000"}
-              onChange={(e) => onChange(e.target.value)}
-              className="size-8 cursor-pointer rounded-md border bg-transparent p-0.5"
+            <ColorPicker
+              label={control.label}
+              value={String(value)}
+              onChange={onChange}
+              themeColors={themeColors}
             />
             <Input
               id={id}
@@ -127,6 +129,15 @@ function ControlRow({
 
 export function CustomizePanel({ entry, state, onOption, onToken }: Props) {
   const baseline = entry.baseline(state);
+  // Current colors of this component, offered first in every color picker
+  const themeColors = entry.controls
+    .flatMap((group) => group.controls)
+    .filter((control) => control.type === "color")
+    .map((control) =>
+      String(
+        state.tokens[control.key] ?? baseline[control.key] ?? state.options[control.key] ?? "",
+      ),
+    );
 
   return (
     <aside
@@ -147,12 +158,22 @@ export function CustomizePanel({ entry, state, onOption, onToken }: Props) {
                 {group.title}
               </h3>
               {group.controls.map((control) =>
-                control.target === "token" ? (
+                control.type === "link" ? (
+                  <Link
+                    key={control.key}
+                    href={control.href(state)}
+                    className="inline-flex items-center gap-1 text-xs text-brand underline-offset-4 hover:underline"
+                  >
+                    {control.label}
+                    <ArrowUpRight className="size-3" aria-hidden />
+                  </Link>
+                ) : control.target === "token" ? (
                   <ControlRow
                     key={control.key}
                     control={control}
                     value={state.tokens[control.key] ?? baseline[control.key] ?? ""}
                     onChange={(v) => onToken(control.key, String(v))}
+                    themeColors={themeColors}
                   />
                 ) : (
                   <ControlRow
@@ -160,6 +181,7 @@ export function CustomizePanel({ entry, state, onOption, onToken }: Props) {
                     control={control}
                     value={state.options[control.key] ?? ""}
                     onChange={(v) => onOption(control.key, v)}
+                    themeColors={themeColors}
                   />
                 ),
               )}

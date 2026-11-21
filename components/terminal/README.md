@@ -62,6 +62,11 @@ term.destroy();
 
 `pnpm dev` ← `http://localhost:3000/components/terminal` (تب React / Vanilla، پنل Customize، Copy)
 
+در سایت Playground:
+
+- **Width / Height:** عرض (درصد، توکن `width`) و ارتفاع (توکن `height`) قابل تنظیم‌اند و در `terminal.config.ts` کپی‌شده می‌آیند.
+- **Banner:** «From text» متن و فونت (۱۰ فونت FIGlet) و فاصله‌ی حروف را می‌گیرد و خطوط ASCII را می‌سازد؛ «From ASCII Editor» اثر ارسال‌شده از ابزار `/ascii` را استفاده می‌کند. در هر دو حالت فقط خطوط نهایی در `banner` فایل config کپی‌شده نوشته می‌شوند؛ کامپوننت dependency جدیدی نمی‌گیرد.
+
 ## کامندها
 
 همه‌ی خروجی‌ها به انگلیسی و با فرمت لینوکسی‌اند. هر کامند را می‌شود با `commands` بازنویسی کرد.

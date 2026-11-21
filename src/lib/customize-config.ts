@@ -4,7 +4,7 @@
 
 type Range = { open: number; close: number };
 type Prop = { valueStart: number; valueEnd: number };
-export type Literal = string | number | boolean;
+export type Literal = string | number | boolean | string[];
 
 function skipString(src: string, i: number): number {
   const quote = src[i];
@@ -100,7 +100,18 @@ function locate(src: string, path: string[]): Range | null {
 const usesDoubleQuotes = (src: string) =>
   (src.match(/: "/g)?.length ?? 0) >= (src.match(/: '/g)?.length ?? 0);
 
-function literal(value: Literal, src: string): string {
+/** Indentation of the line that contains `index` */
+function lineIndent(src: string, index: number): string {
+  const start = src.lastIndexOf("\n", index - 1) + 1;
+  return /^[ \t]*/.exec(src.slice(start))?.[0] ?? "";
+}
+
+function literal(value: Literal, src: string, indent = ""): string {
+  if (Array.isArray(value)) {
+    if (!value.length) return "[]";
+    const inner = `${indent}  `;
+    return `[\n${value.map((item) => `${inner}${literal(item, src)},`).join("\n")}\n${indent}]`;
+  }
   if (typeof value !== "string") return String(value);
   if (usesDoubleQuotes(src)) return JSON.stringify(value);
   return `'${value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
@@ -120,7 +131,12 @@ export function setValue(src: string, path: string[], key: string, value: Litera
   const range = locate(src, path);
   if (!range) return src;
   const prop = findProp(src, range, key);
-  if (prop) return src.slice(0, prop.valueStart) + literal(value, src) + src.slice(prop.valueEnd);
+  if (prop)
+    return (
+      src.slice(0, prop.valueStart) +
+      literal(value, src, lineIndent(src, prop.valueStart)) +
+      src.slice(prop.valueEnd)
+    );
   let last = range.close - 1;
   while (/\s/.test(src[last])) last--;
   const entry = `${keyLiteral(key, src)}: ${literal(value, src)}`;

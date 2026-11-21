@@ -151,10 +151,10 @@ components/<name>/
 
 ```
 src/
-├── app/                      # layout، صفحه‌ی خانه، components/[slug] (سورس‌ها هنگام build با fs خوانده می‌شوند)
-├── components/               # UI سایت: sidebar، studio، customize-panel، preview، code-view
+├── app/                      # layout، خانه، components/[slug] (سورس‌ها هنگام build با fs خوانده می‌شوند)، ascii/ (ASCII Editor)
+├── components/               # UI سایت: sidebar، studio، customize-panel، preview، code-view، color-picker
 │   └── ui/                   # shadcn (فقط برای UI سایت)
-├── lib/customize-config.ts   # patch مقادیر literal در `<name>.config.ts`
+├── lib/                      # customize-config (patch مقادیر config)، url-state (تنظیمات در URL)، color، ascii/ (موتور ASCII)
 └── registry/                 # برای هر کامپوننت: `<name>.meta.ts` (server) + `<name>.tsx` (کنترل‌ها، preview، customize)
 ```
 
@@ -163,6 +163,9 @@ src/
 - shadcn/ui فقط برای UI خود سایت است؛ کامپوننت‌های کتابخانه هرگز از shadcn یا فایل‌های سایت استفاده نمی‌کنند.
 - `src/app/globals.css` تنها فایل CSS معمولی است (`@import "tailwindcss"; @source "../../components";` + تم dark سایت).
 - `pnpm new` ورودی registry را هم می‌سازد و ثبت می‌کند؛ کنترل‌های پیش‌فرض را بعداً متناسب با کامپوننت کامل کن.
+- **تنظیمات در URL:** هر تغییر در پنل Customize (فقط تفاوت با حالت اولیه) در query صفحه ذخیره می‌شود (`?theme=amber&width=80`)؛ refresh، باز کردن دوباره‌ی تب و اشتراک لینک همه‌چیز را برمی‌گرداند. Reset آن را پاک می‌کند.
+- **Color Picker داخلی** (`src/components/color-picker.tsx`) به‌جای picker سیستم‌عامل، برای همه‌ی کنترل‌های رنگ.
+- **ابزار ASCII Editor** (`/ascii`): متن (فونت‌های FIGlet)، تصویر/وب‌کم (بلاک، braille، binary، پیکسل رنگی)، رسم دستی، خروجی‌ها؛ موتورش (`src/lib/ascii/`) در پنل Banner ترمینال هم استفاده می‌شود.
 
 ---
 

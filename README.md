@@ -7,7 +7,7 @@
 
 ## سایت Playground
 
-سایت Next.js + shadcn/ui (فقط dark) برای مرور کامپوننت‌ها، Live Preview (React و Vanilla)، کاستوم کردن رنگ/فونت/قاب/متن و کپی همان حالت؛ `<name>.config.ts` با مقادیر انتخابی بازتولید می‌شود.
+سایت Next.js + shadcn/ui (فقط dark) برای مرور کامپوننت‌ها، Live Preview (React و Vanilla)، کاستوم کردن رنگ/فونت/قاب/متن و کپی همان حالت؛ `<name>.config.ts` با مقادیر انتخابی بازتولید می‌شود. تنظیمات در URL ذخیره می‌شوند (refresh و اشتراک لینک)، و ابزار **ASCII Editor** (`/ascii`) متن، تصویر و وب‌کم را به ASCII تبدیل می‌کند.
 
 ```bash
 pnpm install

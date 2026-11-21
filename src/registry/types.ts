@@ -26,7 +26,9 @@ export type Control =
       choices: { label: string; value: string }[];
     })
   | (Base & { type: "text"; target: "option" })
-  | (Base & { type: "switch"; target: "option" });
+  | (Base & { type: "switch"; target: "option" })
+  /** A link (e.g. to a playground tool); holds no value and never reaches the URL or config */
+  | (Base & { type: "link"; target: "none"; href: (state: StudioState) => string });
 
 export interface ControlGroup {
   title: string;

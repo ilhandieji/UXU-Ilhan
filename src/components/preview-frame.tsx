@@ -36,7 +36,7 @@ export function PreviewFrame({
   const Preview = entry.Preview;
   return (
     <div className="flex min-h-[32rem] items-center justify-center overflow-hidden rounded-lg border bg-[radial-gradient(circle,var(--color-border)_1px,transparent_1px)] bg-size-[20px_20px] p-4 sm:p-8">
-      <div className="w-full max-w-4xl">
+      <div className="w-full">
         {framework === "react" ? (
           <Preview state={state} />
         ) : (

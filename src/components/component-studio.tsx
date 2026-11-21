@@ -1,7 +1,9 @@
 "use client";
 
-import { RotateCcw } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Link2, RotateCcw } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { CodeView } from "@/components/code-view";
 import { CustomizePanel } from "@/components/customize-panel";
 import { PreviewFrame } from "@/components/preview-frame";
@@ -9,7 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { getEntry } from "@/registry";
+import { decodeStudio, encodeStudio, replaceQuery, type StudioTab } from "@/lib/url-state";
 import type { Framework, OptionValue, StudioState } from "@/registry/types";
+
+/** Delay before the URL follows the state, so dragging a slider doesn't flood history updates */
+const URL_DEBOUNCE_MS = 150;
 
 type Props = { slug: string; sources: Record<Framework, Record<string, string>> };
 
@@ -17,9 +23,21 @@ export function ComponentStudio({ slug, sources }: Props) {
   const entry = getEntry(slug);
   if (!entry) throw new Error(`Unknown component: ${slug}`);
 
-  const [framework, setFramework] = useState<Framework>("react");
-  const [state, setState] = useState<StudioState>(entry.initialState);
+  // The URL is the source of truth on load (refresh / reopened tab / shared link)
+  const params = useSearchParams();
+  const [fromUrl] = useState(() => decodeStudio(entry, new URLSearchParams(params.toString())));
+  const [framework, setFramework] = useState<Framework>(fromUrl.framework);
+  const [tab, setTab] = useState<StudioTab>(fromUrl.tab);
+  const [state, setState] = useState<StudioState>(fromUrl.state);
   const [previewKey, setPreviewKey] = useState(0);
+
+  useEffect(() => {
+    const timer = setTimeout(
+      () => replaceQuery(encodeStudio(entry, { state, framework, tab })),
+      URL_DEBOUNCE_MS,
+    );
+    return () => clearTimeout(timer);
+  }, [entry, state, framework, tab]);
 
   const setOption = (key: string, value: OptionValue) =>
     setState((prev) => ({
@@ -35,6 +53,16 @@ export function ComponentStudio({ slug, sources }: Props) {
     setPreviewKey((k) => k + 1);
   };
 
+  const copyLink = async () => {
+    replaceQuery(encodeStudio(entry, { state, framework, tab }));
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copied", { description: "It opens this component with your settings." });
+    } catch {
+      toast.error("Could not copy the link");
+    }
+  };
+
   const files = useMemo(() => {
     const raw = sources[framework];
     return Object.entries(raw).map(([name, code]) => ({
@@ -45,7 +73,7 @@ export function ComponentStudio({ slug, sources }: Props) {
 
   return (
     <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
-      <Tabs defaultValue="preview" className="min-w-0">
+      <Tabs value={tab} onValueChange={(value) => setTab(value as StudioTab)} className="min-w-0">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <TabsList>
             <TabsTrigger value="preview">Preview</TabsTrigger>
@@ -63,6 +91,10 @@ export function ComponentStudio({ slug, sources }: Props) {
               <ToggleGroupItem value="react">React</ToggleGroupItem>
               <ToggleGroupItem value="vanilla">Vanilla</ToggleGroupItem>
             </ToggleGroup>
+            <Button variant="outline" size="sm" onClick={copyLink}>
+              <Link2 aria-hidden />
+              Copy link
+            </Button>
             <Button variant="outline" size="sm" onClick={reset}>
               <RotateCcw aria-hidden />
               Reset

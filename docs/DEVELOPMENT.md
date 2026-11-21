@@ -29,7 +29,20 @@ pnpm dev
 
 ### کنترل‌ها
 
-نوع‌ها: `color`، `slider`، `select`، `text`، `switch`؛ `target: 'token'` (توکن تم، مثل `bg`) یا `'option'` (گزینه‌ی `defaults`، مسیر نقطه‌دار مثل `site.version`). تغییر preset تم، override رنگ‌ها را پاک می‌کند.
+نوع‌ها: `color`، `slider`، `select`، `text`، `switch`، `link`؛ `target: 'token'` (توکن تم، مثل `bg`)، `'option'` (گزینه‌ی `defaults`، مسیر نقطه‌دار مثل `site.version`) یا `'none'` (فقط `link`: لینک به ابزار سایت). تغییر preset تم، override رنگ‌ها را پاک می‌کند. کنترل `color` با Color Picker داخلی سایت باز می‌شود (پالت، رنگ‌های تم، رنگ‌های اخیر، hex/RGB/alpha؛ EyeDropper فقط در مرورگرهایی که پشتیبانی می‌کنند).
+
+### تنظیمات در URL
+
+`src/lib/url-state.ts`: state پنل Customize (option و token)، framework (`fw`) و تب (`tab`) در query صفحه نوشته می‌شوند؛ فقط مقادیری که با `initialState` فرق دارند، با debounce و `history.replaceState`. نام پارامتر = `key` کنترل؛ boolean ⇒ `1/0`؛ slider ⇒ عدد بدون واحد. هنگام بارگذاری کلید ناشناخته و مقدار نامعتبر (خارج از choices، بازه یا رنگ نامعتبر) نادیده گرفته می‌شود. option بدون کنترل (مثل `bannerMode`) هم با نوع مقدار اولیه‌اش خوانده می‌شود. دکمه‌های **Copy link** و **Reset** در نوار بالا.
+
+### ASCII Editor (`/ascii`)
+
+| مسیر             | کار                                                                                                                                                                                                                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/ascii/` | موتور مشترک: `grid` (مدل سلول، ابزارهای رسم، undo/redo)، `fonts` (FIGlet؛ ۱۰ فونت اصلی همگام + ۲۳ فونت تنبل)، `image` (charsetها، dithering، رنگ ANSI16/256/truecolor، braille، half-block)، `render` (canvas)، `export` (txt / ANSI / shell / HTML / PNG / JSON)، `terminal-banner` (ارسال به ترمینال) |
+| `src/app/ascii/` | صفحه و کامپوننت‌های اختصاصی آن (تب Text / Image / Draw، خروجی‌ها)؛ تنظیمات در URL، رسم در `localStorage`                                                                                                                                                                                                |
+
+پنل **Banner** ترمینال از همین موتور استفاده می‌کند: متن + فونت ⇒ خطوط ASCII که در `banner` فایل `terminal.config.ts` کپی‌شده bake می‌شوند (کامپوننت dependency نمی‌گیرد). «Send to Terminal» در ادیتور، اثر را (متن ساده، بدون رنگ) به‌عنوان banner ترمینال باز می‌کند.
 
 ### Copy
 
@@ -66,7 +79,7 @@ pnpm build
 
 ### ریشه
 
-- سایت: `next` · `react` · `react-dom` · وابستگی‌های shadcn (`radix-ui`، `lucide-react`، `class-variance-authority`، `clsx`، `tailwind-merge`) · `sonner` (toast)
+- سایت: `next` · `react` · `react-dom` · وابستگی‌های shadcn (`radix-ui`، `lucide-react`، `class-variance-authority`، `clsx`، `tailwind-merge`) · `sonner` (toast) · `react-colorful` (Color Picker) · `figlet` (فونت‌های ASCII Editor؛ هر فونت جدا import می‌شود)
 - ابزار: `typescript` · `tailwindcss` · `@tailwindcss/postcss` · `tw-animate-css` · `shiki` (هایلایت کد) · `prettier` · `@types/*`
 
 Terminal بدون کتابخانه‌ی ترمینال (xterm.js) ساخته می‌شود؛ شبیه‌ساز shell و رندر متنی کافی است.

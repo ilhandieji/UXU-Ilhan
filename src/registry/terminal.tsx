@@ -13,6 +13,8 @@ import {
   type TerminalVariant,
 } from "@lib/terminal/react/terminal.config";
 import { createTerminal } from "@lib/terminal/vanilla/terminal";
+import { CORE_FONTS, DEFAULT_FONT, renderText, type AsciiLayout } from "@/lib/ascii/fonts";
+import { readBannerArt } from "@/lib/ascii/terminal-banner";
 import { hasKey, setValue } from "@/lib/customize-config";
 import { sitePages } from "./meta";
 import { terminalMeta } from "./terminal.meta";
@@ -32,7 +34,28 @@ const initialOptions = {
   placeholder: defaults.placeholder,
   "site.name": defaults.site.name,
   "site.version": defaults.site.version,
+  // Playground-only: the resulting lines are baked into `banner`, these keys never reach the config
+  bannerMode: "default",
+  bannerText: "UXU",
+  bannerFont: DEFAULT_FONT,
+  bannerLayout: "default",
 };
+
+const BANNER_KEYS = new Set(["bannerMode", "bannerText", "bannerFont", "bannerLayout"]);
+
+/** Banner lines for the current state; null = keep the config's default banner */
+function bannerLines(state: StudioState): string[] | null {
+  const o = state.options;
+  if (o.bannerMode === "text") {
+    const lines = renderText(String(o.bannerText), {
+      font: String(o.bannerFont),
+      layout: o.bannerLayout as AsciiLayout,
+    });
+    return lines.length ? lines : null;
+  }
+  if (o.bannerMode === "art") return readBannerArt();
+  return null;
+}
 
 function read(state: StudioState) {
   const o = state.options;
@@ -65,6 +88,7 @@ function toOptions(state: StudioState): TerminalOptions {
     placeholder: String(o.placeholder),
     site: { ...defaults.site, name: String(o["site.name"]), version: String(o["site.version"]) },
     pages: sitePages(),
+    ...(bannerLines(state) ? { banner: bannerLines(state) as string[] } : {}),
   };
 }
 
@@ -156,12 +180,61 @@ export const terminal: RegistryEntry = {
         {
           type: "slider",
           target: "token",
+          key: "width",
+          label: "Width",
+          min: 30,
+          max: 100,
+          step: 5,
+          unit: "%",
+        },
+        {
+          type: "slider",
+          target: "token",
           key: "height",
           label: "Height",
           min: 240,
           max: 720,
           step: 10,
           unit: "px",
+        },
+      ],
+    },
+    {
+      title: "Banner",
+      controls: [
+        {
+          type: "select",
+          target: "option",
+          key: "bannerMode",
+          label: "Banner",
+          choices: [
+            { label: "Default", value: "default" },
+            { label: "From text", value: "text" },
+            { label: "From ASCII Editor", value: "art" },
+          ],
+        },
+        { type: "text", target: "option", key: "bannerText", label: "Banner text" },
+        {
+          type: "select",
+          target: "option",
+          key: "bannerFont",
+          label: "Font",
+          choices: CORE_FONTS.map((font) => ({ label: font, value: font })),
+        },
+        {
+          type: "select",
+          target: "option",
+          key: "bannerLayout",
+          label: "Letter spacing",
+          choices: ["default", "fitted", "full", "smushed"].map((v) => ({ label: v, value: v })),
+        },
+        {
+          type: "link",
+          target: "none",
+          key: "bannerEditor",
+          label: "Open in ASCII Editor",
+          href: (state) =>
+            `/ascii?${new URLSearchParams({ text: String(state.options.bannerText), font: String(state.options.bannerFont) })}`,
         },
       ],
     },
@@ -191,7 +264,8 @@ export const terminal: RegistryEntry = {
     const { base, size } = read(state);
     let out = source;
     for (const [key, value] of Object.entries(state.options)) {
-      if (initialOptions[key as keyof typeof initialOptions] === value) continue;
+      if (BANNER_KEYS.has(key) || initialOptions[key as keyof typeof initialOptions] === value)
+        continue;
       const path = key.split(".");
       out = setValue(out, ["defaults", ...path.slice(0, -1)], path[path.length - 1], value);
     }
@@ -205,6 +279,8 @@ export const terminal: RegistryEntry = {
             : ["themes", base];
       out = setValue(out, target, key, value);
     }
+    const banner = bannerLines(state);
+    if (banner) out = setValue(out, ["defaults"], "banner", banner);
     return out;
   },
   usage: (framework) =>

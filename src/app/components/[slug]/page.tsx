@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ComponentStudio } from "@/components/component-studio";
 import { PageHeader } from "@/components/page-header";
@@ -46,7 +47,12 @@ export default async function ComponentPage({ params }: Props) {
       <main className="w-full px-4 py-8 sm:px-6">
         <h1 className="text-3xl font-semibold tracking-tight">{meta.name}</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">{meta.description}</p>
-        <ComponentStudio slug={meta.slug} sources={await readSources(meta.slug, meta.files)} />
+        {/* useSearchParams needs a Suspense boundary on statically generated pages */}
+        <Suspense
+          fallback={<div className="mt-8 h-[32rem] animate-pulse rounded-lg border bg-card" />}
+        >
+          <ComponentStudio slug={meta.slug} sources={await readSources(meta.slug, meta.files)} />
+        </Suspense>
       </main>
     </>
   );

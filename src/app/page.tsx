@@ -67,6 +67,28 @@ export default function Home() {
             </li>
           ))}
         </ul>
+
+        <h2 className="mt-14 text-lg font-semibold">Tools</h2>
+        <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+          <li>
+            <Link
+              href="/ascii"
+              className="group flex h-full flex-col rounded-lg border bg-card p-5 transition-colors duration-200 hover:border-brand/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            >
+              <span className="flex items-center justify-between font-medium">
+                ASCII Editor
+                <ArrowRight
+                  className="size-4 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5"
+                  aria-hidden
+                />
+              </span>
+              <span className="mt-1 text-sm text-muted-foreground">
+                Text, images and camera to ASCII (blocks, braille, color pixels), a grid to draw on,
+                and exports.
+              </span>
+            </Link>
+          </li>
+        </ul>
       </main>
     </>
   );
