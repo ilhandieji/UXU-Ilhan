@@ -1,10 +1,12 @@
 // Server-safe list of components (sidebar, routes, sources). `pnpm new` adds entries below the markers.
 import { terminalMeta } from "./terminal.meta";
+import { glowCursorMeta } from "./glow-cursor.meta";
 // @new-meta-import
 import type { ComponentMeta } from "./types";
 
 export const components: ComponentMeta[] = [
   terminalMeta,
+  glowCursorMeta,
   // @new-meta
 ];
 
