@@ -4,7 +4,7 @@
 
 type Range = { open: number; close: number };
 type Prop = { valueStart: number; valueEnd: number };
-export type Literal = string | number | boolean | string[];
+export type Literal = string | number | boolean | Literal[] | { [key: string]: Literal };
 
 function skipString(src: string, i: number): number {
   const quote = src[i];
@@ -107,10 +107,17 @@ function lineIndent(src: string, index: number): string {
 }
 
 function literal(value: Literal, src: string, indent = ""): string {
+  const inner = `${indent}  `;
   if (Array.isArray(value)) {
     if (!value.length) return "[]";
-    const inner = `${indent}  `;
-    return `[\n${value.map((item) => `${inner}${literal(item, src)},`).join("\n")}\n${indent}]`;
+    return `[\n${value.map((item) => `${inner}${literal(item, src, inner)},`).join("\n")}\n${indent}]`;
+  }
+  if (typeof value === "object") {
+    const entries = Object.entries(value);
+    if (!entries.length) return "{}";
+    return `{\n${entries
+      .map(([key, item]) => `${inner}${keyLiteral(key, src)}: ${literal(item, src, inner)},`)
+      .join("\n")}\n${indent}}`;
   }
   if (typeof value !== "string") return String(value);
   if (usesDoubleQuotes(src)) return JSON.stringify(value);

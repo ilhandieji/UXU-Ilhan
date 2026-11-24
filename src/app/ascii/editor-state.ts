@@ -3,6 +3,7 @@
 import { isCssColor } from "@/lib/color";
 import { ALL_FONTS, DEFAULT_FONT, type AsciiAlign, type AsciiLayout } from "@/lib/ascii/fonts";
 import { createGrid, MAX_GRID, type Grid } from "@/lib/ascii/grid";
+import { QR_LEVELS, type QrLevel } from "@/lib/ascii/qr";
 import {
   defaultImageOptions,
   type Charset,
@@ -11,10 +12,16 @@ import {
   type ImageOptions,
 } from "@/lib/ascii/image";
 
-export type EditorTab = "text" | "image" | "draw";
+export type EditorTab = "text" | "image" | "draw" | "animate";
+export type TextMode = "figlet" | "qr";
 
 export interface EditorSettings {
   tab: EditorTab;
+  /** FIGlet text or a QR code of the same text */
+  textMode: TextMode;
+  qrLevel: QrLevel;
+  /** Draw light QR modules (scannable on a dark background) */
+  qrInvert: boolean;
   text: string;
   font: string;
   layout: AsciiLayout;
@@ -30,7 +37,8 @@ export interface EditorSettings {
   background: string;
 }
 
-export const TABS = ["text", "image", "draw"] as const;
+export const TABS = ["text", "image", "draw", "animate"] as const;
+export const TEXT_MODES = ["figlet", "qr"] as const;
 export const LAYOUTS = ["default", "fitted", "full", "smushed"] as const;
 export const ALIGNS = ["left", "center", "right"] as const;
 export const CHARSETS = [
@@ -47,6 +55,9 @@ export const COLOR_MODES = ["mono", "ansi16", "ansi256", "truecolor"] as const;
 
 export const defaultSettings: EditorSettings = {
   tab: "text",
+  textMode: "figlet",
+  qrLevel: "M",
+  qrInvert: true,
   text: "UXU-Ilhan",
   font: DEFAULT_FONT,
   layout: "default",
@@ -65,6 +76,8 @@ export const DEFAULT_DRAWING = { width: 80, height: 24 };
 /** Flat URL keys → setting paths; image options are prefixed with "i" to avoid clashes */
 const STRING_KEYS = [
   "tab",
+  "textMode",
+  "qrLevel",
   "text",
   "font",
   "layout",
@@ -87,6 +100,8 @@ const IMAGE_NUMBERS: Record<string, [min: number, max: number]> = {
 
 const ENUMS: Record<string, readonly string[]> = {
   tab: TABS,
+  textMode: TEXT_MODES,
+  qrLevel: QR_LEVELS,
   font: ALL_FONTS,
   layout: LAYOUTS,
   align: ALIGNS,
@@ -99,6 +114,7 @@ export function encodeSettings(s: EditorSettings): string {
   const d = defaultSettings;
   const params = new URLSearchParams();
   for (const key of STRING_KEYS) if (s[key] !== d[key]) params.set(key, s[key]);
+  if (s.qrInvert !== d.qrInvert) params.set("qrInvert", s.qrInvert ? "1" : "0");
   for (const key of Object.keys(NUMBER_KEYS) as ("wrap" | "zoom")[])
     if (s[key] !== d[key]) params.set(key, String(s[key]));
   for (const [key, value] of Object.entries(s.image) as [
@@ -134,6 +150,8 @@ export function decodeSettings(params: URLSearchParams): EditorSettings {
       continue;
     (s as unknown as Record<string, string>)[key] = raw;
   }
+  const invert = params.get("qrInvert");
+  if (invert === "1" || invert === "0") s.qrInvert = invert === "1";
   for (const [key, range] of Object.entries(NUMBER_KEYS)) {
     const raw = params.get(key);
     const n = raw === null ? undefined : clampNum(raw, range);
@@ -151,6 +169,55 @@ export function decodeSettings(params: URLSearchParams): EditorSettings {
     else if (ENUMS[key]?.includes(raw)) img[key] = raw as Charset | Dither | ColorMode;
   }
   return s;
+}
+
+function isGrid(g: unknown): g is Grid {
+  const v = g as Grid;
+  return (
+    !!v &&
+    Number.isInteger(v.width) &&
+    Number.isInteger(v.height) &&
+    v.width > 0 &&
+    v.height > 0 &&
+    v.width <= MAX_GRID &&
+    v.height <= MAX_GRID &&
+    Array.isArray(v.cells) &&
+    v.cells.length === v.width * v.height
+  );
+}
+
+// ---------- Animation (frames are kept in localStorage like the drawing) ----------
+
+export const ANIMATION_KEY = "uxu:ascii-animation";
+export const MAX_FRAMES = 60;
+
+export interface Animation {
+  frames: Grid[];
+  fps: number;
+}
+
+export function defaultAnimation(): Animation {
+  return { frames: [createGrid(40, 12)], fps: 8 };
+}
+
+export function loadAnimation(): Animation {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(ANIMATION_KEY) ?? "null") as Animation | null;
+    if (!parsed || !Array.isArray(parsed.frames)) return defaultAnimation();
+    const frames = parsed.frames.filter(isGrid).slice(0, MAX_FRAMES);
+    const fps = Number.isFinite(parsed.fps) ? Math.min(30, Math.max(1, parsed.fps)) : 8;
+    return frames.length ? { frames, fps } : defaultAnimation();
+  } catch {
+    return defaultAnimation();
+  }
+}
+
+export function saveAnimation(animation: Animation) {
+  try {
+    localStorage.setItem(ANIMATION_KEY, JSON.stringify(animation));
+  } catch {
+    // Quota or private mode: frames just won't survive a reload
+  }
 }
 
 export function loadDrawing(): Grid {

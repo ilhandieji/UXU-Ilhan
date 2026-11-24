@@ -1,7 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { forwardRef, useEffect, useRef, type Ref } from "react";
+import { FpsMeter } from "@/components/fps-meter";
+import type { Viewport } from "@/lib/url-state";
 import type { Framework, RegistryEntry, StudioState, VanillaHandle } from "@/registry/types";
+
+const VIEWPORT_WIDTH: Record<Viewport, string> = {
+  full: "w-full",
+  tablet: "w-full max-w-[768px]",
+  mobile: "w-full max-w-[375px]",
+};
 
 function VanillaPreview({ entry, state }: { entry: RegistryEntry; state: StudioState }) {
   const host = useRef<HTMLDivElement>(null);
@@ -24,19 +32,29 @@ function VanillaPreview({ entry, state }: { entry: RegistryEntry; state: StudioS
   return <div ref={host} className="w-full" />;
 }
 
-export function PreviewFrame({
-  entry,
-  framework,
-  state,
-}: {
+type FrameProps = {
   entry: RegistryEntry;
   framework: Framework;
   state: StudioState;
-}) {
+  viewport: Viewport;
+  fps: boolean;
+};
+
+/** The ref points at the visible frame (used to crop preview recordings) */
+export const PreviewFrame = forwardRef(function PreviewFrame(
+  { entry, framework, state, viewport, fps }: FrameProps,
+  ref: Ref<HTMLDivElement>,
+) {
   const Preview = entry.Preview;
   return (
-    <div className="flex min-h-[32rem] items-center justify-center overflow-hidden rounded-lg border bg-[radial-gradient(circle,var(--color-border)_1px,transparent_1px)] bg-size-[20px_20px] p-4 sm:p-8">
-      <div className="w-full">
+    <div
+      ref={ref}
+      className="relative flex min-h-[32rem] items-center justify-center overflow-hidden rounded-xl border bg-sidebar/70 bg-[radial-gradient(circle,var(--color-input)_1px,transparent_1px)] bg-size-[24px_24px] p-4 sm:p-8"
+    >
+      {fps ? <FpsMeter /> : null}
+      <div
+        className={`${VIEWPORT_WIDTH[viewport]} ${viewport === "full" ? "" : "rounded-md outline outline-dashed outline-border outline-offset-8"}`}
+      >
         {framework === "react" ? (
           <Preview state={state} />
         ) : (
@@ -45,4 +63,4 @@ export function PreviewFrame({
       </div>
     </div>
   );
-}
+});

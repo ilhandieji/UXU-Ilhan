@@ -2,7 +2,7 @@ import type { ComponentMeta } from "./types";
 
 export const __name__Meta: ComponentMeta = {
   slug: "__name__",
-  name: "__Name__",
+  name: "__Title__",
   description: "Short description of what __Name__ does.",
   files: {
     react: ["__Name__.tsx", "__name__.config.ts"],

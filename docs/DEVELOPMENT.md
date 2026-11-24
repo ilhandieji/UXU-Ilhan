@@ -18,18 +18,41 @@ pnpm dev
 
 سپس `http://localhost:3000` (صفحه‌ی هر کامپوننت: `/components/<name>`).
 
-| مسیر                          | کار                                                                                                                              |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `src/app/`                    | layout (dark، sidebar)، صفحه‌ی خانه، `components/[slug]` (سورس فایل‌ها هنگام build با `fs` خوانده می‌شود)                        |
-| `src/components/`             | UI سایت: `component-studio`، `customize-panel`، `preview-frame`، `code-view`، `app-sidebar`                                      |
-| `src/components/ui/`          | shadcn (فقط UI سایت؛ کامپوننت‌های کتابخانه از آن استفاده نمی‌کنند)                                                               |
-| `src/lib/customize-config.ts` | فقط مقدارهای literal را در `<name>.config.ts` عوض می‌کند (کامنت و ساختار می‌ماند)                                                |
-| `src/registry/`               | برای هر کامپوننت: `<name>.meta.ts` (server-safe: نام، فایل‌ها، نیازمندی‌ها) و `<name>.tsx` (کنترل‌ها، preview، customize، usage) |
-| `src/app/globals.css`         | تنها فایل CSS: Tailwind + `@source "../../components"` + تم dark سایت                                                            |
+| مسیر                          | کار                                                                                                                                                                        |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app/`                    | layout (dark، sidebar)، صفحه‌ی خانه، `components/[slug]` (سورس فایل‌ها هنگام build با `fs` خوانده می‌شود)                                                                  |
+| `src/components/`             | UI سایت: `component-studio`، `studio-toolbar`، `customize-panel`، `preview-frame`، `preview-recorder`، `code-view`، `color-picker`، `site-search`، `konami`، `app-sidebar` |
+| `src/components/ui/`          | shadcn (فقط UI سایت؛ کامپوننت‌های کتابخانه از آن استفاده نمی‌کنند)                                                                                                         |
+| `src/lib/customize-config.ts` | فقط مقدارهای literal را در `<name>.config.ts` عوض می‌کند (کامنت و ساختار می‌ماند)                                                                                          |
+| `src/registry/`               | برای هر کامپوننت: `<name>.meta.ts` (server-safe: نام، فایل‌ها، نیازمندی‌ها) و `<name>.tsx` (کنترل‌ها، preview، customize، usage)                                           |
+| `src/app/globals.css`         | تنها فایل CSS: Tailwind + `@source "../../components"` + تم dark سایت                                                                                                      |
 
 ### کنترل‌ها
 
 نوع‌ها: `color`، `slider`، `select`، `text`، `switch`، `link`؛ `target: 'token'` (توکن تم، مثل `bg`)، `'option'` (گزینه‌ی `defaults`، مسیر نقطه‌دار مثل `site.version`) یا `'none'` (فقط `link`: لینک به ابزار سایت). تغییر preset تم، override رنگ‌ها را پاک می‌کند. کنترل `color` با Color Picker داخلی سایت باز می‌شود (پالت، رنگ‌های تم، رنگ‌های اخیر، hex/RGB/alpha؛ EyeDropper فقط در مرورگرهایی که پشتیبانی می‌کنند).
+
+### برند (UXU-Ilhan)
+
+| مورد                                    | مسیر                                                                                                                                     |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| فایل‌های اصلی (نماد، لوگو، برگه‌ی هویت) | `public/brand/*.svg` (در footer قابل دانلود)                                                                                             |
+| favicon / آیکون iOS / manifest          | `src/app/icon.svg` · `src/app/apple-icon.png` (PNG ۱۸۰، ساخته‌شده از icon.svg) · `src/app/manifest.json`                                                 |
+| کامپوننت‌ها                             | `src/components/brand.tsx`: `BrandMark` (با `animated`؛ فقط با `motion-safe`)، `BrandWordmark`، `BrandLogo`، `BrandPill`، `BrandEyebrow` |
+| footer و هدر                            | `src/components/site-footer.tsx` (لینک‌ها، پالت قابل کپی)، `src/components/header-brand.tsx` (نماد در نوار بالا وقتی sidebar بسته است)   |
+| صفحه‌ی 404                              | `src/app/not-found.tsx`                                                                                                                  |
+
+پالت برند ⇒ توکن‌های `globals.css`: پس‌زمینه `#0E1310` (+ گرید ۴۸px)، کارت `#171D1A`، خط `#2B3530`، متن `#F0F4F1`، متن کم‌رنگ `#A2AEA7`، سبز برند `#3BDF89` (`--primary`/`--brand`)، `--brand-soft`، `--brand-surface`/`--brand-edge` (pill)، و `--subtle` `#65736B` فقط برای برچسب‌های تزئینی (کنتراست ≈ ۳٫۸). پالت **UXU** اولین پالت منوی Palette در Studio است.
+
+### نوار Studio و فیلدهای اختیاری registry
+
+بالای Preview: عرض پیش‌نمایش (Full / Tablet 768 / Mobile 375، در URL با `vp`)، **Presets**، **Palette** (پالت‌های سایت در `src/lib/site-palettes.ts` یا «From an image…» با k-means در `src/lib/palette-from-image.ts`)، **Randomize** (`src/lib/randomize.ts`)، **FPS** و **Record** (ضبط GIF/WebM با `getDisplayMedia`؛ آزمایشی: در Firefox فقط پنجره قابل اشتراک است و کراپ تقریبی است). فیلدهای اختیاری `RegistryEntry`:
+
+- `presets`: `{ name, options?, tokens? }[]` روی `initialState` اعمال می‌شود.
+- `randomizeSkip`: کلیدهایی که Randomize دست نمی‌زند (متن، enabled/paused، …).
+- `palette(p)`: نگاشت `SitePalette` (`bg`, `fg`, `accent`, `muted`) به توکن‌های رنگ همین کامپوننت؛ Randomize هم برای رنگ‌ها از پالت تصادفی هماهنگ استفاده می‌کند.
+- `contrastPairs`: `{ fg: "bg" }`؛ کنار هر رنگ متن نسبت کنتراست WCAG (AA/AAA) نشان داده می‌شود.
+
+تب Code: **Compare React / Vanilla** (دو ستون) و **Open in StackBlitz** (`src/lib/stackblitz.ts`: پروژه‌ی Vite + Tailwind v4 با POST فرم، بدون SDK). **Ctrl+K** در همه‌ی صفحات (`site-search`، ساخته‌شده با کامپوننت Command Palette خود کتابخانه): کامپوننت‌ها، ابزارها و presetها.
 
 ### تنظیمات در URL
 
@@ -37,12 +60,12 @@ pnpm dev
 
 ### ASCII Editor (`/ascii`)
 
-| مسیر             | کار                                                                                                                                                                                                                                                                                                     |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/ascii/` | موتور مشترک: `grid` (مدل سلول، ابزارهای رسم، undo/redo)، `fonts` (FIGlet؛ ۱۰ فونت اصلی همگام + ۲۳ فونت تنبل)، `image` (charsetها، dithering، رنگ ANSI16/256/truecolor، braille، half-block)، `render` (canvas)، `export` (txt / ANSI / shell / HTML / PNG / JSON)، `terminal-banner` (ارسال به ترمینال) |
-| `src/app/ascii/` | صفحه و کامپوننت‌های اختصاصی آن (تب Text / Image / Draw، خروجی‌ها)؛ تنظیمات در URL، رسم در `localStorage`                                                                                                                                                                                                |
+| مسیر             | کار                                                                                                                                                                                                                                                                                                                             |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/ascii/` | موتور مشترک: `grid` (مدل سلول، ابزارهای رسم، undo/redo)، `fonts` (FIGlet؛ ۱۰ فونت اصلی همگام + ۲۳ فونت تنبل)، `image` (re-export از موتور کامپوننت ASCII Renderer)، `qr` (QR با ▀▄█)، `render` (canvas)، `export` (txt / ANSI / shell / HTML / PNG / GIF / emoji / JSON)، `terminal-banner` (ارسال banner و انیمیشن به ترمینال) |
+| `src/app/ascii/` | صفحه و کامپوننت‌های اختصاصی آن (تب Text [فونت یا QR] / Image / Draw / Animate، خروجی‌ها)؛ تنظیمات در URL، رسم و فریم‌های انیمیشن در `localStorage`                                                                                                                                                                              |
 
-پنل **Banner** ترمینال از همین موتور استفاده می‌کند: متن + فونت ⇒ خطوط ASCII که در `banner` فایل `terminal.config.ts` کپی‌شده bake می‌شوند (کامپوننت dependency نمی‌گیرد). «Send to Terminal» در ادیتور، اثر را (متن ساده، بدون رنگ) به‌عنوان banner ترمینال باز می‌کند.
+پنل **Banner** ترمینال از همین موتور استفاده می‌کند: متن + فونت ⇒ خطوط ASCII که در `banner` فایل `terminal.config.ts` کپی‌شده bake می‌شوند (کامپوننت dependency نمی‌گیرد). «Send to Terminal» در ادیتور، اثر را (متن ساده، بدون رنگ) به‌عنوان banner ترمینال باز می‌کند؛ در تب Animate فریم‌ها را به `animations` ترمینال (کامند `play`) می‌فرستد و در config کپی‌شده bake می‌کند.
 
 ### Copy
 
@@ -79,7 +102,7 @@ pnpm build
 
 ### ریشه
 
-- سایت: `next` · `react` · `react-dom` · وابستگی‌های shadcn (`radix-ui`، `lucide-react`، `class-variance-authority`، `clsx`، `tailwind-merge`) · `sonner` (toast) · `react-colorful` (Color Picker) · `figlet` (فونت‌های ASCII Editor؛ هر فونت جدا import می‌شود)
+- سایت: `next` · `react` · `react-dom` · وابستگی‌های shadcn (`radix-ui`، `lucide-react`، `class-variance-authority`، `clsx`، `tailwind-merge`) · `sonner` (toast) · `react-colorful` (Color Picker) · `figlet` (فونت‌های ASCII Editor؛ هر فونت جدا import می‌شود) · `gifenc` (خروجی GIF: ضبط Preview و انیمیشن ASCII) · `qrcode-generator` (QR در ASCII Editor)
 - ابزار: `typescript` · `tailwindcss` · `@tailwindcss/postcss` · `tw-animate-css` · `shiki` (هایلایت کد) · `prettier` · `@types/*`
 
 Terminal بدون کتابخانه‌ی ترمینال (xterm.js) ساخته می‌شود؛ شبیه‌ساز shell و رندر متنی کافی است.

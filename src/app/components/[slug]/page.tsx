@@ -3,6 +3,7 @@ import path from "node:path";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import { BrandEyebrow } from "@/components/brand";
 import { ComponentStudio } from "@/components/component-studio";
 import { PageHeader } from "@/components/page-header";
 import { components } from "@/registry/meta";
@@ -45,7 +46,8 @@ export default async function ComponentPage({ params }: Props) {
     <>
       <PageHeader trail={["Components", meta.name]} />
       <main className="w-full px-4 py-8 sm:px-6">
-        <h1 className="text-3xl font-semibold tracking-tight">{meta.name}</h1>
+        <BrandEyebrow>Component</BrandEyebrow>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">{meta.name}</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">{meta.description}</p>
         {/* useSearchParams needs a Suspense boundary on statically generated pages */}
         <Suspense

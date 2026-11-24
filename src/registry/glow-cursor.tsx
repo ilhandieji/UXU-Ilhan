@@ -131,6 +131,23 @@ function Preview({ state }: { state: StudioState }) {
 export const glowCursor: RegistryEntry = {
   ...glowCursorMeta,
   themeKey: "theme",
+  presets: [
+    { name: "Rainbow idle", options: { colorMode: "rainbow", idle: true } },
+    {
+      name: "Fireworks",
+      options: { theme: "ember" },
+      tokens: { burstJets: "16", burstSize: "2.4" },
+    },
+    { name: "Velocity neon", options: { theme: "neon", colorMode: "velocity" } },
+    {
+      name: "Long aurora",
+      options: { theme: "aurora" },
+      tokens: { linger: "4.5", trailWidth: "40px" },
+    },
+    { name: "Light page", options: { mode: "light", theme: "ink" } },
+  ],
+  randomizeSkip: ["enabled", "paused", "respectReducedMotion", "hideCursor", "variant", "mode"],
+  palette: (p) => ({ color: p.accent, secondaryColor: p.muted }),
   controls: [
     {
       title: "Preset & Color",

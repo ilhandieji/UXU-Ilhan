@@ -1,11 +1,20 @@
 "use client";
 
-import { ChevronDown, Copy, Download, PencilLine, TerminalSquare } from "lucide-react";
+import { ChevronDown, Copy, Download, Film, PencilLine, TerminalSquare } from "lucide-react";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { download, toAnsi, toHtml, toJson, toPng, toShell, toText } from "@/lib/ascii/export";
+import {
+  download,
+  toAnsi,
+  toEmoji,
+  toHtml,
+  toJson,
+  toPng,
+  toShell,
+  toText,
+} from "@/lib/ascii/export";
 import type { Grid } from "@/lib/ascii/grid";
 
 type Props = {
@@ -13,6 +22,8 @@ type Props = {
   foreground: string;
   background: string;
   onEditInDraw?: () => void;
+  /** Appends the current result as a frame of the animation */
+  onAddFrame?: () => void;
   onSendToTerminal: () => void;
 };
 
@@ -37,7 +48,14 @@ function MenuItem({ children, onClick }: { children: ReactNode; onClick: () => v
   );
 }
 
-export function ExportBar({ grid, foreground, background, onEditInDraw, onSendToTerminal }: Props) {
+export function ExportBar({
+  grid,
+  foreground,
+  background,
+  onEditInDraw,
+  onAddFrame,
+  onSendToTerminal,
+}: Props) {
   const colors = { foreground, background };
 
   return (
@@ -65,6 +83,9 @@ export function ExportBar({ grid, foreground, background, onEditInDraw, onSendTo
             Shell command (256 colors)
           </MenuItem>
           <MenuItem onClick={() => copy("HTML", toHtml(grid, colors))}>HTML &lt;pre&gt;</MenuItem>
+          <MenuItem onClick={() => copy("Emoji art", toEmoji(grid, foreground))}>
+            Emoji art 🟩 (chats)
+          </MenuItem>
         </PopoverContent>
       </Popover>
 
@@ -104,6 +125,12 @@ export function ExportBar({ grid, foreground, background, onEditInDraw, onSendTo
         <Button size="sm" variant="outline" onClick={onEditInDraw}>
           <PencilLine aria-hidden />
           Edit in Draw
+        </Button>
+      ) : null}
+      {onAddFrame ? (
+        <Button size="sm" variant="outline" onClick={onAddFrame}>
+          <Film aria-hidden />
+          Add as frame
         </Button>
       ) : null}
       <Button

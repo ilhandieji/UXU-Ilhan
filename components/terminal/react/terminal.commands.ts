@@ -19,23 +19,40 @@ export interface CommandContext {
   /** The terminal element (excluded from `find`) */
   root: HTMLElement | null;
   clear: () => void;
+  /** Waits for a line typed by the user (interactive commands); rejects on Ctrl+C */
+  read: (prompt?: string) => Promise<string>;
+  /** Waits for one key press (e.key) */
+  readKey: () => Promise<string>;
+  /** Prints an output that can be replaced later (animations, live counters) */
+  live: (out: Output) => (next: Output) => void;
 }
 
 export type TerminalCommand = (
   args: string[],
   ctx: CommandContext,
 ) => CommandResult | Promise<CommandResult>;
-export type CommandGroup = "system" | "navigation" | "tools" | "network" | "custom";
+export type CommandGroup =
+  "system" | "navigation" | "tools" | "network" | "games" | "fun" | "custom";
 export interface CommandDef {
   usage: string;
   description: string;
   group?: CommandGroup;
+  /** Not listed by `help` (easter eggs) */
+  hidden?: boolean;
   run: TerminalCommand;
 }
 
 // ---------- helpers ----------
 
-const GROUPS: CommandGroup[] = ["system", "navigation", "tools", "network", "custom"];
+const GROUPS: CommandGroup[] = [
+  "system",
+  "navigation",
+  "tools",
+  "network",
+  "games",
+  "fun",
+  "custom",
+];
 const RULE_WIDTH = 56;
 
 /** Two aligned columns: left padded to the widest entry (monospace) */
@@ -244,7 +261,7 @@ export const builtinCommands: Record<string, CommandDef> = {
     usage: "help",
     description: "list all commands",
     run: (_, { commands }) => {
-      const defs = Object.values(commands);
+      const defs = Object.values(commands).filter((d) => !d.hidden);
       const width = Math.max(...defs.map((d) => d.usage.length)) + 4;
       const out: Output[] = [];
       for (const group of GROUPS) {
@@ -605,7 +622,365 @@ export const builtinCommands: Record<string, CommandDef> = {
   },
 };
 
+// ---------- games (option `games`) ----------
+
+const TYPING_TEXTS = [
+  "the quick terminal prints green text on a black screen",
+  "small components are easy to copy and easy to change",
+  "every keystroke counts when the clock is running",
+  "tokens and options make each component fully dynamic",
+  "a good prompt is short clear and always ready",
+];
+
+/** Rooms of the `quest` text adventure: a small server building to escape from */
+type Room = { name: string; text: string; exits: Record<string, string>; item?: string };
+const QUEST_ROOMS: Record<string, Room> = {
+  lobby: {
+    name: "Lobby",
+    text: "A quiet lobby. A dusty terminal blinks on the desk.",
+    exits: { north: "hall" },
+    item: "badge",
+  },
+  hall: {
+    name: "Hallway",
+    text: "A long hallway humming with fans. Doors lead east and west, stairs go up.",
+    exits: { south: "lobby", east: "servers", west: "archive", up: "roof" },
+  },
+  servers: {
+    name: "Server room",
+    text: "Racks of blinking lights. Someone left a flashlight on a rack.",
+    exits: { west: "hall" },
+    item: "flashlight",
+  },
+  archive: {
+    name: "Archive",
+    text: "It is too dark to read anything here.",
+    exits: { east: "hall" },
+    item: "key",
+  },
+  roof: {
+    name: "Roof",
+    text: "A locked hatch blocks the way to the roof.",
+    exits: { down: "hall" },
+  },
+};
+
+async function quest({ print, read }: CommandContext): Promise<CommandResult> {
+  let room = "lobby";
+  const inventory = new Set<string>();
+  const taken = new Set<string>();
+  const describe = () => {
+    const r = QUEST_ROOMS[room];
+    const dark = room === "archive" && !inventory.has("flashlight");
+    print([seg(`== ${r.name} ==`, "accent")]);
+    print(
+      dark
+        ? r.text
+        : room === "archive"
+          ? "Shelves of old backups. Your light finds something shiny."
+          : r.text,
+    );
+    if (r.item && !taken.has(r.item) && !(room === "archive" && dark))
+      print([seg("You see: ", "dim"), seg(r.item, "bright")]);
+    print([seg(`Exits: ${Object.keys(r.exits).join(", ")}`, "dim")]);
+  };
+  print([
+    seg("QUEST", "accent"),
+    seg(" — find a way onto the roof. Type 'help' for verbs.", "dim"),
+  ]);
+  describe();
+  for (;;) {
+    const [verb = "", target = ""] = (await read("quest>")).trim().toLowerCase().split(/\s+/);
+    if (verb === "quit" || verb === "exit") return "You leave the building. Maybe next time.";
+    if (verb === "help") {
+      print("look · go <dir> (or n/s/e/w/up/down) · take <item> · inventory · quit");
+      continue;
+    }
+    if (verb === "look") {
+      describe();
+      continue;
+    }
+    if (verb === "inventory" || verb === "i") {
+      print(inventory.size ? `You carry: ${[...inventory].join(", ")}` : "Your hands are empty.");
+      continue;
+    }
+    if (verb === "take") {
+      const r = QUEST_ROOMS[room];
+      const visible =
+        r.item && !taken.has(r.item) && !(room === "archive" && !inventory.has("flashlight"));
+      if (visible && target === r.item) {
+        taken.add(r.item as string);
+        inventory.add(r.item as string);
+        print([seg("Taken: ", "dim"), seg(target, "accent")]);
+      } else print("You can't take that.");
+      continue;
+    }
+    const short: Record<string, string> = {
+      n: "north",
+      s: "south",
+      e: "east",
+      w: "west",
+      u: "up",
+      d: "down",
+    };
+    const dir = verb === "go" ? (short[target] ?? target) : (short[verb] ?? verb);
+    const next = QUEST_ROOMS[room].exits[dir];
+    if (!next) {
+      print("You can't go that way.");
+      continue;
+    }
+    if (next === "roof" && inventory.has("key")) {
+      print([seg("The key turns. The hatch swings open to a sky full of stars.", "accent")]);
+      return [[seg("★ You escaped! ", "accent"), seg(`Items found: ${inventory.size}/3`, "dim")]];
+    }
+    room = next;
+    describe();
+  }
+}
+
+export const gameCommands: Record<string, CommandDef> = {
+  typing: {
+    group: "games",
+    usage: "typing",
+    description: "typing speed test (WPM)",
+    run: async (_, { print, read }) => {
+      const text = TYPING_TEXTS[Math.floor(Math.random() * TYPING_TEXTS.length)];
+      print([seg("Type the line below and press Enter:", "dim")]);
+      print([seg(text, "accent")]);
+      const start = performance.now();
+      const typed = await read(">");
+      const minutes = Math.max(1 / 60, (performance.now() - start) / 60000);
+      let correct = 0;
+      for (let i = 0; i < text.length; i++) if (typed[i] === text[i]) correct++;
+      const accuracy = Math.round((correct / text.length) * 100);
+      const wpm = Math.round(typed.length / 5 / minutes);
+      return [
+        [seg("WPM      ", "dim"), seg(String(wpm), "accent")],
+        [seg("accuracy ", "dim"), seg(`${accuracy}%`, accuracy >= 95 ? "accent" : "error")],
+      ];
+    },
+  },
+  guess: {
+    group: "games",
+    usage: "guess",
+    description: "guess the number (1–100)",
+    run: async (_, { print, read }) => {
+      const secret = 1 + Math.floor(Math.random() * 100);
+      print([seg("I picked a number between 1 and 100. You have 7 tries.", "dim")]);
+      for (let tryNo = 1; tryNo <= 7; tryNo++) {
+        const n = Number.parseInt(await read(`guess ${tryNo}/7>`), 10);
+        if (!Number.isFinite(n)) print("That is not a number.");
+        else if (n === secret)
+          return [[seg(`✓ ${secret}! `, "accent"), seg(`Found in ${tryNo} tries.`, "dim")]];
+        else print(n < secret ? "↑ higher" : "↓ lower");
+      }
+      return [[seg(`Out of tries — it was ${secret}.`, "error")]];
+    },
+  },
+  quest: {
+    group: "games",
+    usage: "quest",
+    description: "tiny text adventure",
+    run: (_, ctx) => quest(ctx),
+  },
+};
+
+// ---------- easter eggs (option `easterEggs`) ----------
+
+const MATRIX_CHARS = "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄ0123456789";
+
+export const easterEggCommands: Record<string, CommandDef> = {
+  sudo: {
+    group: "fun",
+    hidden: true,
+    usage: "sudo <command>",
+    description: "become root",
+    run: async (_, { options, read }) => {
+      await read(`[sudo] password for ${options.currentUser || options.user}:`);
+      return [
+        [
+          seg(
+            `${options.currentUser || options.user} is not in the sudoers file. Nice try.`,
+            "error",
+          ),
+        ],
+      ];
+    },
+  },
+  rm: {
+    group: "fun",
+    hidden: true,
+    usage: "rm -rf /",
+    description: "remove files",
+    run: async (args, { live, sleep }) => {
+      if (!args.includes("-rf") || !args.includes("/")) return "rm: missing operand";
+      const paths = [
+        "/bin",
+        "/boot",
+        "/etc",
+        "/home/guest",
+        "/usr/lib",
+        "/var/log",
+        "/the/internet",
+      ];
+      const update = live([seg("removing…", "dim")]);
+      for (const path of paths) {
+        update([seg("removed ", "error"), seg(`'${path}'`, "bright")]);
+        await sleep(260);
+      }
+      update([seg("…just kidding. Nothing was deleted 😉", "accent")]);
+    },
+  },
+  matrix: {
+    group: "fun",
+    hidden: true,
+    usage: "matrix",
+    description: "follow the white rabbit",
+    run: async (_, { live, sleep }) => {
+      const width = 48;
+      const rows = 8;
+      const frame = () =>
+        Array.from({ length: rows }, () =>
+          Array.from({ length: width }, () =>
+            Math.random() < 0.35
+              ? MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)]
+              : " ",
+          ).join(""),
+        );
+      const update = live({ art: frame(), lines: [] });
+      for (let i = 0; i < 30; i++) {
+        await sleep(90);
+        update({ art: frame(), lines: [] });
+      }
+      update([seg("Wake up…", "accent")]);
+    },
+  },
+};
+
+// ---------- animations (option `animations`) ----------
+
+export const playCommand: CommandDef = {
+  group: "fun",
+  usage: "play [name]",
+  description: "play an ASCII animation",
+  run: async ([name], { options, live, sleep }) => {
+    const names = Object.keys(options.animations);
+    if (!names.length) return "No animations. Add some with the `animations` option.";
+    const pick = name ?? names[0];
+    const animation = options.animations[pick];
+    if (!animation)
+      return [[seg(`play: unknown animation '${pick}'. Try: ${names.join(", ")}`, "error")]];
+    const frames = animation.frames.filter((f) => f.length);
+    if (!frames.length) return;
+    const delay = 1000 / Math.min(30, Math.max(1, animation.fps || 8));
+    const loops = Math.max(1, Math.ceil(3000 / (delay * frames.length)));
+    const update = live({ art: frames[0], lines: [] });
+    for (let i = 1; i < frames.length * loops; i++) {
+      await sleep(delay);
+      update({ art: frames[i % frames.length], lines: [] });
+    }
+  },
+};
+
+// ---------- boot sequence (option `bootSequence`) ----------
+
+const STATUS_LABEL = { ok: " OK ", fail: "FAIL", warn: "WARN", info: "INFO" } as const;
+const STATUS_TONE: Record<keyof typeof STATUS_LABEL, Tone> = {
+  ok: "accent",
+  fail: "error",
+  warn: "bright",
+  info: "dim",
+};
+
+/** Prints the boot lines with their delays; resolves early when `signal` aborts (skip) */
+export async function playBootSequence(
+  sequence: TerminalSettings["bootSequence"],
+  { print, signal }: { print: (out: Output) => void; signal: AbortSignal },
+): Promise<void> {
+  const speed = Math.max(0.1, sequence.speed || 1);
+  for (const line of sequence.lines) {
+    if (signal.aborted) return;
+    await new Promise<void>((resolve) => {
+      const timer = setTimeout(resolve, (line.delay ?? 120) / speed);
+      signal.addEventListener("abort", () => (clearTimeout(timer), resolve()), { once: true });
+    });
+    if (signal.aborted) return;
+    print(
+      line.status
+        ? [
+            seg("[", "dim"),
+            seg(STATUS_LABEL[line.status], STATUS_TONE[line.status]),
+            seg("] ", "dim"),
+            seg(line.text, "bright"),
+          ]
+        : line.text,
+    );
+  }
+}
+
+// ---------- key sounds (option `sound`) ----------
+
+export interface KeySound {
+  play(kind: "key" | "enter"): void;
+  close(): void;
+}
+
+/** Synthesized clicks (Web Audio, no audio files); created lazily on the first key press */
+export function createKeySound(settings: () => TerminalSettings["sound"]): KeySound {
+  let audio: AudioContext | null = null;
+  return {
+    play(kind) {
+      const { enabled, volume, profile } = settings();
+      if (!enabled || typeof AudioContext === "undefined") return;
+      audio ??= new AudioContext();
+      const t = audio.currentTime;
+      const gain = audio.createGain();
+      const peak = Math.min(1, Math.max(0, volume)) * (kind === "enter" ? 0.5 : 0.3);
+      gain.gain.setValueAtTime(peak, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + (profile === "soft" ? 0.08 : 0.05));
+      gain.connect(audio.destination);
+      if (profile === "retro") {
+        const osc = audio.createOscillator();
+        osc.type = "square";
+        osc.frequency.value = kind === "enter" ? 440 : 880 + Math.random() * 120;
+        osc.connect(gain);
+        osc.start(t);
+        osc.stop(t + 0.05);
+        return;
+      }
+      // Short noise burst through a band-pass filter = a key click
+      const length = Math.floor(audio.sampleRate * 0.04);
+      const buffer = audio.createBuffer(1, length, audio.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / length) ** 3;
+      const noise = audio.createBufferSource();
+      noise.buffer = buffer;
+      const filter = audio.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.value =
+        (profile === "soft" ? 1800 : 3200) * (kind === "enter" ? 0.6 : 0.9 + Math.random() * 0.2);
+      noise.connect(filter).connect(gain);
+      noise.start(t);
+    },
+    close() {
+      void audio?.close();
+      audio = null;
+    },
+  };
+}
+
 // ---------- engine ----------
+
+/** Built-ins + enabled extras + user commands (user commands win) */
+export function availableCommands(options: TerminalSettings): Record<string, CommandDef> {
+  return {
+    ...builtinCommands,
+    ...(options.games ? gameCommands : {}),
+    ...(options.easterEggs ? easterEggCommands : {}),
+    play: playCommand,
+    ...toCommandDefs(options.commands),
+  };
+}
 
 export function toCommandDefs(
   commands: Record<string, TerminalCommand | CommandDef>,
@@ -627,13 +1002,16 @@ export interface ExecuteEnv {
   signal: AbortSignal;
   print: (out: Output) => void;
   clear: () => void;
+  read: (prompt?: string) => Promise<string>;
+  readKey: () => Promise<string>;
+  live: (out: Output) => (next: Output) => void;
 }
 
 /** Runs one command line; outputs go through env.print */
 export async function executeLine(line: string, env: ExecuteEnv): Promise<void> {
   const [name, ...args] = parseArgs(line.trim());
   if (!name) return;
-  const commands = { ...builtinCommands, ...toCommandDefs(env.options.commands) };
+  const commands = availableCommands(env.options);
   const def = commands[name];
   if (!def) return env.print([seg(`${name}: command not found`, "error")]);
   const sleep = (ms: number) =>
@@ -666,7 +1044,9 @@ export async function executeLine(line: string, env: ExecuteEnv): Promise<void> 
 
 /** Tab completion for command names and `cd`/`man` arguments */
 export function complete(value: string, options: TerminalSettings): string {
-  const commands = { ...builtinCommands, ...toCommandDefs(options.commands) };
+  const commands = Object.fromEntries(
+    Object.entries(availableCommands(options)).filter(([, def]) => !def.hidden),
+  );
   const [cmd, arg] = value.split(/\s+(.*)/);
   const pick = (prefix: string, words: string[]) => {
     const found = words.filter((w) => w.startsWith(prefix));

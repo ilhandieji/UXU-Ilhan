@@ -1,6 +1,7 @@
-// Grid exporters: plain text, ANSI escapes, HTML, PNG and JSON lines (for the Terminal `banner`).
+// Grid exporters: plain text, ANSI escapes, HTML, PNG, GIF, emoji and JSON lines (Terminal `banner`).
 import { toLines, type Grid } from "./grid";
 import { ANSI16, ANSI256, hexToRgb, nearestIndex } from "./palettes";
+import { encodeGif } from "@/lib/gif";
 import { paintGrid, measureCell } from "./render";
 
 export type AnsiDepth = "truecolor" | "256" | "16";
@@ -115,6 +116,67 @@ export async function toPng(
       "image/png",
     ),
   );
+}
+
+/** Square emoji and their approximate colors, for "emoji art" in chats */
+const EMOJI: [string, [number, number, number]][] = [
+  ["⬛", [24, 24, 24]],
+  ["⬜", [240, 240, 240]],
+  ["🟥", [221, 46, 68]],
+  ["🟧", [244, 144, 12]],
+  ["🟨", [253, 203, 88]],
+  ["🟩", [120, 177, 89]],
+  ["🟦", [85, 172, 238]],
+  ["🟪", [170, 142, 214]],
+  ["🟫", [193, 105, 79]],
+];
+
+/** One emoji per cell: background color wins, then the glyph color; empty cells are ⬛ */
+export function toEmoji(g: Grid, foreground = "#e6e6e6"): string {
+  const palette = EMOJI.map(([, rgb]) => rgb);
+  const lines: string[] = [];
+  for (let y = 0; y < g.height; y++) {
+    let line = "";
+    for (let x = 0; x < g.width; x++) {
+      const c = g.cells[y * g.width + x];
+      const color = c.bg ?? (c.ch === " " ? undefined : (c.fg ?? foreground));
+      line += color ? EMOJI[nearestIndex(hexToRgb(color), palette)][0] : EMOJI[0][0];
+    }
+    lines.push(line);
+  }
+  return lines.join("\n");
+}
+
+/** Animated GIF of several grids (frames are padded to the largest one) */
+export function toGif(
+  frames: Grid[],
+  {
+    fps = 8,
+    fontSize = 14,
+    background = "#000000",
+    foreground = "#e6e6e6",
+    font = "'JetBrains Mono', monospace",
+  } = {},
+): Blob {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) throw new Error("Canvas 2D is not available");
+  const cell = measureCell(ctx, fontSize, font);
+  const pad = Math.round(fontSize / 2);
+  const cols = Math.max(...frames.map((f) => f.width));
+  const rows = Math.max(...frames.map((f) => f.height));
+  canvas.width = Math.ceil(cols * cell.width + pad * 2);
+  canvas.height = Math.ceil(rows * cell.height + pad * 2);
+  const images = frames.map((frame) => {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = background;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.translate(pad, pad);
+    paintGrid(ctx, frame, { cell, fontSize, font, foreground });
+    const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    return { data, width: canvas.width, height: canvas.height };
+  });
+  return encodeGif(images, Math.round(1000 / fps));
 }
 
 export function download(name: string, data: Blob | string, type = "text/plain;charset=utf-8") {

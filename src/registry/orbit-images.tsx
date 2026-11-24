@@ -165,6 +165,14 @@ function Preview({ state }: { state: StudioState }) {
 export const orbitImages: RegistryEntry = {
   ...orbitImagesMeta,
   themeKey: "theme",
+  presets: [
+    { name: "Heart", tokens: { shape: "heart", radius: "220" } },
+    { name: "Infinity slow", tokens: { shape: "infinity", duration: "40s" } },
+    { name: "Star tilt", tokens: { shape: "star", tilt: "18°", starPoints: "6" } },
+    { name: "Flower", tokens: { shape: "flower", petals: "6", showPath: "true" } },
+  ],
+  randomizeSkip: ["paused", "intro", "scrollLink", "variant"],
+  palette: (p) => ({ pathColor: p.accent }),
   controls: [
     {
       title: "Preset & Shape",

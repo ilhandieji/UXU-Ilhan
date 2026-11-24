@@ -1,12 +1,12 @@
 "use client";
 
 import { Pipette } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { HexAlphaColorPicker } from "react-colorful";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { hexToRgba, isCssColor, rgbaToHex, toHex } from "@/lib/color";
+import { contrastLevel, contrastRatio, hexToRgba, isCssColor, rgbaToHex, toHex } from "@/lib/color";
 
 const RECENT_KEY = "uxu:recent-colors";
 const RECENT_MAX = 12;
@@ -78,11 +78,52 @@ type Props = {
   label: string;
   /** Extra swatches shown first, e.g. the colors of the current theme */
   themeColors?: string[];
+  /** Background this color sits on; shows the WCAG contrast ratio */
+  contrastWith?: string;
   className?: string;
 };
 
+/** WCAG ratio + level badge (used inside the picker and next to color rows) */
+const noop = () => () => {};
+/** True only on the client: color parsing needs the browser, so the badge never renders on the server */
+const useIsClient = () =>
+  useSyncExternalStore(
+    noop,
+    () => true,
+    () => false,
+  );
+
+export function ContrastBadge({ color, background }: { color: string; background: string }) {
+  const isClient = useIsClient();
+  if (!isClient || !isCssColor(color) || !isCssColor(background)) return null;
+  const ratio = contrastRatio(toHex(color), toHex(background));
+  const level = contrastLevel(ratio);
+  const tone =
+    level === "AAA" || level === "AA"
+      ? "border-emerald-500/40 text-emerald-400"
+      : level === "AA large"
+        ? "border-amber-500/40 text-amber-400"
+        : "border-red-500/40 text-red-400";
+  return (
+    <span
+      title={`Contrast ${ratio.toFixed(2)}:1 against ${background}`}
+      className={`inline-flex items-center gap-1 rounded border px-1 font-mono text-[10px] leading-4 tabular-nums ${tone}`}
+    >
+      {ratio.toFixed(1)}
+      <span>{level}</span>
+    </span>
+  );
+}
+
 /** In-site color picker (popover) — replaces the OS picker opened by <input type="color"> */
-export function ColorPicker({ value, onChange, label, themeColors = [], className }: Props) {
+export function ColorPicker({
+  value,
+  onChange,
+  label,
+  themeColors = [],
+  contrastWith,
+  className,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [recent, setRecent] = useState<string[]>([]);
   const hex = toHex(value);
@@ -158,6 +199,13 @@ export function ColorPicker({ value, onChange, label, themeColors = [], classNam
             </Button>
           ) : null}
         </div>
+
+        {contrastWith ? (
+          <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+            <span>Contrast on background</span>
+            <ContrastBadge color={value} background={contrastWith} />
+          </div>
+        ) : null}
 
         <div className="grid grid-cols-4 gap-1.5 font-mono text-[10px] text-muted-foreground">
           {(["r", "g", "b"] as const).map((channel, i) => (

@@ -152,9 +152,9 @@ components/<name>/
 ```
 src/
 ├── app/                      # layout، خانه، components/[slug] (سورس‌ها هنگام build با fs خوانده می‌شوند)، ascii/ (ASCII Editor)
-├── components/               # UI سایت: sidebar، studio، customize-panel، preview، code-view، color-picker
+├── components/               # UI سایت: sidebar، studio + studio-toolbar، customize-panel، preview (+ recorder، FPS)، code-view، color-picker، site-search (Ctrl+K)، konami
 │   └── ui/                   # shadcn (فقط برای UI سایت)
-├── lib/                      # customize-config (patch مقادیر config)، url-state (تنظیمات در URL)، color، ascii/ (موتور ASCII)
+├── lib/                      # customize-config، url-state، color (+ کنتراست WCAG)، randomize، site-palettes، palette-from-image، stackblitz، gif، ascii/ (موتور ASCII)
 └── registry/                 # برای هر کامپوننت: `<name>.meta.ts` (server) + `<name>.tsx` (کنترل‌ها، preview، customize)
 ```
 
@@ -166,6 +166,8 @@ src/
 - **تنظیمات در URL:** هر تغییر در پنل Customize (فقط تفاوت با حالت اولیه) در query صفحه ذخیره می‌شود (`?theme=amber&width=80`)؛ refresh، باز کردن دوباره‌ی تب و اشتراک لینک همه‌چیز را برمی‌گرداند. Reset آن را پاک می‌کند.
 - **Color Picker داخلی** (`src/components/color-picker.tsx`) به‌جای picker سیستم‌عامل، برای همه‌ی کنترل‌های رنگ.
 - **ابزار ASCII Editor** (`/ascii`): متن (فونت‌های FIGlet)، تصویر/وب‌کم (بلاک، braille، binary، پیکسل رنگی)، رسم دستی، خروجی‌ها؛ موتورش (`src/lib/ascii/`) در پنل Banner ترمینال هم استفاده می‌شود.
+- **برند:** فایل‌های لوگو در `public/brand/` (نماد، لوگو، برگه‌ی هویت)، favicon در `src/app/icon.svg` (+ `apple-icon.png` و `manifest.json`)، کامپوننت‌های `BrandMark` / `BrandWordmark` / `BrandLogo` / `BrandPill` / `BrandEyebrow` در `src/components/brand.tsx`؛ توکن‌های رنگ سایت از پالت برند می‌آیند (`globals.css`). فقط سایت؛ کامپوننت‌های کتابخانه برند نمی‌گیرند.
+- **نوار Studio:** پیش‌نمایش ریسپانسیو، Presets، پالت سایت/پالت از عکس، Randomize، FPS، ضبط Preview، چک کنتراست، Compare و StackBlitz در تب Code؛ جستجوی Ctrl+K با کامپوننت Command Palette خود کتابخانه (سایت از کتابخانه import می‌کند، نه برعکس). فیلدهای اختیاری registry: `presets`، `randomizeSkip`، `palette`، `contrastPairs` (جزئیات: `docs/DEVELOPMENT.md`).
 
 ---
 

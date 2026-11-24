@@ -55,7 +55,33 @@ export interface TerminalOptions {
   };
   /** Custom commands or overrides of built-in ones */
   commands?: Record<string, TerminalCommand | CommandDef>;
+  /** Built-in games: typing, guess, quest */
+  games?: boolean;
+  /** Hidden fun commands (sudo, rm -rf /, matrix) */
+  easterEggs?: boolean;
+  /** Synthesized key click sounds (Web Audio, off by default) */
+  sound?: { enabled: boolean; volume: number; profile: TerminalSoundProfile };
+  /** Lines printed one by one before the banner; empty = no boot sequence */
+  bootSequence?: {
+    lines: TerminalBootLine[];
+    /** Speed multiplier (2 = twice as fast) */
+    speed: number;
+    /** A key press or click skips the sequence */
+    skippable: boolean;
+    /** Remove the boot lines once the banner appears */
+    clearAfter: boolean;
+  };
+  /** ASCII animations for the `play` command: frames of lines + frames per second */
+  animations?: Record<string, { frames: string[][]; fps: number }>;
   onCommand?: (line: string) => void;
+}
+
+export type TerminalSoundProfile = "mechanical" | "soft" | "retro";
+export interface TerminalBootLine {
+  text: string;
+  status?: "ok" | "fail" | "warn" | "info";
+  /** Delay before this line in ms (default 120) */
+  delay?: number;
 }
 
 type Optional = "currentUser" | "navigate" | "onBack" | "onCommand";
@@ -126,6 +152,11 @@ export const defaults: TerminalSettings = {
     ],
   },
   commands: {},
+  games: true,
+  easterEggs: true,
+  sound: { enabled: false, volume: 0.4, profile: "mechanical" },
+  bootSequence: { lines: [], speed: 1, skippable: true, clearAfter: false },
+  animations: {},
 };
 
 // ---- Tokens ----

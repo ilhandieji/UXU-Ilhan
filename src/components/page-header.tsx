@@ -1,10 +1,13 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import { HeaderBrand } from "@/components/header-brand";
+import { SiteSearch } from "@/components/site-search";
 
 export function PageHeader({ trail }: { trail: string[] }) {
   return (
     <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur">
       <SidebarTrigger className="-ml-1" />
+      <HeaderBrand />
       <Separator orientation="vertical" className="mr-2 h-4" />
       <nav
         aria-label="Breadcrumb"
@@ -17,6 +20,7 @@ export function PageHeader({ trail }: { trail: string[] }) {
           </span>
         ))}
       </nav>
+      <SiteSearch />
     </header>
   );
 }

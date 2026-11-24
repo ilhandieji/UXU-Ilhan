@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1180" viewBox="0 0 1800 1180">
+  <defs>
+    <linearGradient id="surface" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#151B17"/>
+      <stop offset="1" stop-color="#0C100E"/>
+    </linearGradient>
+    <linearGradient id="accentGlow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#69F0A9"/>
+      <stop offset="1" stop-color="#3BDF89"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#8AA094" stroke-opacity=".055" stroke-width="1"/>
+    </pattern>
+    <filter id="softGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="11" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1800" height="1180" fill="url(#surface)"/>
+  <rect width="1800" height="1180" fill="url(#grid)"/>
+  <path d="M 88 132 H 1712" stroke="#2B3530" stroke-width="2"/>
+
+  <!-- Top identity metadata -->
+  <circle cx="102" cy="82" r="7" fill="#3BDF89"/>
+  <text x="126" y="88" fill="#F0F4F1" font-family="DejaVu Sans Mono, monospace" font-size="17" letter-spacing="3">UXU—ILHAN / IDENTITY STUDY 02</text>
+  <text x="1698" y="88" text-anchor="end" fill="#A2AEA7" font-family="DejaVu Sans Mono, monospace" font-size="15" letter-spacing="2">PERSONAL COMPONENT SYSTEM</text>
+
+  <!-- Main logo lockup -->
+  <g transform="translate(135 205)">
+    <g transform="translate(0 0) scale(1.18)">
+      <!-- The two U channels: UX and UI, mirrored around the shared center -->
+      <path d="M 74 28 V 113 C 74 141 91 158 119 158 H 145 C 173 158 190 141 190 113 V 28"
+            fill="none" stroke="#F0F4F1" stroke-width="19" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 230 28 V 113 C 230 141 247 158 275 158 H 301 C 329 158 346 141 346 113 V 28"
+            fill="none" stroke="#F0F4F1" stroke-width="19" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Crossing rails: one route is highlighted to express the two implementations -->
+      <path d="M 168 59 L 252 133" fill="none" stroke="#F0F4F1" stroke-width="17" stroke-linecap="round"/>
+      <path d="M 252 59 L 168 133" fill="none" stroke="#3BDF89" stroke-width="17" stroke-linecap="round"/>
+      <!-- Live interaction point / cursor node -->
+      <circle cx="210" cy="96" r="19" fill="#101412" stroke="#3BDF89" stroke-width="5"/>
+      <circle cx="210" cy="96" r="5" fill="#3BDF89"/>
+      <!-- Subtle orbit trace, a nod to the orbit and glow components -->
+      <path d="M 172 96 A 38 19 0 0 1 248 96" fill="none" stroke="#3BDF89" stroke-width="2.5" stroke-dasharray="3 8" opacity=".75"/>
+    </g>
+  </g>
+  <text x="720" y="344" fill="#F0F4F1" font-family="DejaVu Sans, Arial, sans-serif" font-size="152" font-weight="700" letter-spacing="-9">UX<tspan fill="url(#accentGlow)">U</tspan></text>
+  <path d="M 1164 248 V 375" stroke="#65736B" stroke-width="2"/>
+  <text x="1212" y="324" fill="#F0F4F1" font-family="DejaVu Sans, Arial, sans-serif" font-size="59" font-weight="600" letter-spacing="8">ILHAN</text>
+  <text x="724" y="405" fill="#A2AEA7" font-family="DejaVu Sans, Arial, sans-serif" font-size="21" letter-spacing="4.1">USER EXPERIENCE × USER INTERFACE</text>
+  <text x="724" y="449" fill="#65736B" font-family="DejaVu Sans Mono, monospace" font-size="16" letter-spacing="2.2">COMPONENT PLAYGROUND  /  REACT + VANILLA</text>
+  <rect x="724" y="486" width="260" height="38" rx="19" fill="#1D3328" stroke="#2A5C43"/>
+  <text x="854" y="511" text-anchor="middle" fill="#3BDF89" font-family="DejaVu Sans Mono, monospace" font-size="13" letter-spacing="1.8">UX ↔ UI BRIDGE</text>
+
+  <path d="M 88 585 H 1712" stroke="#2B3530" stroke-width="2"/>
+
+  <!-- Three meaning cards -->
+  <g>
+    <rect x="88" y="630" width="500" height="345" rx="20" fill="#171D1A" stroke="#2B3530"/>
+    <text x="124" y="680" fill="#3BDF89" font-family="DejaVu Sans Mono, monospace" font-size="14" letter-spacing="2">01 / THE MARK</text>
+    <g transform="translate(145 720)">
+      <rect x="0" y="0" width="390" height="172" rx="22" fill="#0E1310" stroke="#344138"/>
+      <g transform="translate(0 6) scale(0.93)">
+      <!-- The two U channels: UX and UI, mirrored around the shared center -->
+      <path d="M 74 28 V 113 C 74 141 91 158 119 158 H 145 C 173 158 190 141 190 113 V 28"
+            fill="none" stroke="#F0F4F1" stroke-width="19" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 230 28 V 113 C 230 141 247 158 275 158 H 301 C 329 158 346 141 346 113 V 28"
+            fill="none" stroke="#F0F4F1" stroke-width="19" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Crossing rails: one route is highlighted to express the two implementations -->
+      <path d="M 168 59 L 252 133" fill="none" stroke="#F0F4F1" stroke-width="17" stroke-linecap="round"/>
+      <path d="M 252 59 L 168 133" fill="none" stroke="#3BDF89" stroke-width="17" stroke-linecap="round"/>
+      <!-- Live interaction point / cursor node -->
+      <circle cx="210" cy="96" r="19" fill="#0E1310" stroke="#3BDF89" stroke-width="5"/>
+      <circle cx="210" cy="96" r="5" fill="#3BDF89"/>
+      <!-- Subtle orbit trace, a nod to the orbit and glow components -->
+      <path d="M 172 96 A 38 19 0 0 1 248 96" fill="none" stroke="#3BDF89" stroke-width="2.5" stroke-dasharray="3 8" opacity=".75"/>
+    </g>
+    </g>
+    <text x="124" y="932" fill="#F0F4F1" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="600">Two U channels. One crossing point.</text>
+    <text x="124" y="958" fill="#A2AEA7" font-family="DejaVu Sans, Arial, sans-serif" font-size="15">Experience and interface meet in one live interaction.</text>
+  </g>
+
+  <g>
+    <rect x="650" y="630" width="500" height="345" rx="20" fill="#171D1A" stroke="#2B3530"/>
+    <text x="686" y="680" fill="#3BDF89" font-family="DejaVu Sans Mono, monospace" font-size="14" letter-spacing="2">02 / TWO IMPLEMENTATIONS</text>
+    <rect x="694" y="730" width="168" height="102" rx="14" fill="#111713" stroke="#44544A"/>
+    <rect x="934" y="730" width="168" height="102" rx="14" fill="#111713" stroke="#44544A"/>
+    <text x="778" y="777" text-anchor="middle" fill="#F0F4F1" font-family="DejaVu Sans, Arial, sans-serif" font-size="27" font-weight="600">React</text>
+    <text x="1018" y="777" text-anchor="middle" fill="#F0F4F1" font-family="DejaVu Sans, Arial, sans-serif" font-size="27" font-weight="600">Vanilla</text>
+    <text x="778" y="806" text-anchor="middle" fill="#65736B" font-family="DejaVu Sans Mono, monospace" font-size="12">TSX</text>
+    <text x="1018" y="806" text-anchor="middle" fill="#65736B" font-family="DejaVu Sans Mono, monospace" font-size="12">TYPESCRIPT</text>
+    <path d="M 870 781 H 926 M 916 770 L 927 781 L 916 792" fill="none" stroke="#3BDF89" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="686" y="892" fill="#F0F4F1" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="600">One idea. Two independent implementations.</text>
+    <text x="686" y="923" fill="#A2AEA7" font-family="DejaVu Sans, Arial, sans-serif" font-size="14">React TSX and Vanilla TypeScript stay standalone.</text>
+  </g>
+
+  <g>
+    <rect x="1212" y="630" width="500" height="345" rx="20" fill="#171D1A" stroke="#2B3530"/>
+    <text x="1248" y="680" fill="#3BDF89" font-family="DejaVu Sans Mono, monospace" font-size="14" letter-spacing="2">03 / PLAYGROUND FLOW</text>
+    <g transform="translate(1250 739)">
+      <rect x="0" y="0" width="126" height="78" rx="12" fill="#111713" stroke="#44544A"/>
+      <rect x="184" y="0" width="126" height="78" rx="12" fill="#111713" stroke="#44544A"/>
+      <rect x="368" y="0" width="92" height="78" rx="12" fill="#111713" stroke="#44544A"/>
+      <rect x="18" y="18" width="90" height="8" rx="4" fill="#6C7A70"/>
+      <rect x="18" y="35" width="62" height="8" rx="4" fill="#35433A"/>
+      <rect x="18" y="52" width="76" height="8" rx="4" fill="#3BDF89"/>
+      <circle cx="207" cy="24" r="7" fill="#3BDF89"/>
+      <rect x="224" y="19" width="68" height="8" rx="4" fill="#647268"/>
+      <rect x="202" y="43" width="90" height="8" rx="4" fill="#35433A"/>
+      <path d="M 322 39 H 358 M 349 30 L 359 39 L 349 48" fill="none" stroke="#3BDF89" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 144 39 H 172 M 163 30 L 173 39 L 163 48" fill="none" stroke="#3BDF89" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 385 18 H 443 M 385 31 H 435 M 385 44 H 428 M 385 57 H 418" stroke="#A2AEA7" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <g fill="#A2AEA7" font-family="DejaVu Sans Mono, monospace" font-size="12" letter-spacing="1">
+      <text x="1313" y="843" text-anchor="middle">PREVIEW</text>
+      <text x="1500" y="843" text-anchor="middle">CUSTOMIZE</text>
+      <text x="1664" y="843" text-anchor="middle">COPY</text>
+    </g>
+    <text x="1248" y="892" fill="#F0F4F1" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="600">See it. Tune it. Take the files.</text>
+    <text x="1248" y="923" fill="#A2AEA7" font-family="DejaVu Sans, Arial, sans-serif" font-size="15">Live preview → config regeneration → copy-paste.</text>
+  </g>
+
+  <!-- Footer: exact project-derived palette and signature -->
+  <g transform="translate(92 1035)">
+    <text x="0" y="0" fill="#65736B" font-family="DejaVu Sans Mono, monospace" font-size="13" letter-spacing="2">PROJECT PALETTE</text>
+    <rect x="0" y="22" width="46" height="28" rx="7" fill="#101412" stroke="#46534B"/>
+    <rect x="58" y="22" width="46" height="28" rx="7" fill="#F0F4F1"/>
+    <rect x="116" y="22" width="46" height="28" rx="7" fill="#3BDF89"/>
+    <rect x="174" y="22" width="46" height="28" rx="7" fill="#A2AEA7"/>
+    <text x="244" y="42" fill="#A2AEA7" font-family="DejaVu Sans Mono, monospace" font-size="13">DARK UI  /  OFF-WHITE  /  BRAND GREEN  /  MUTED TEXT</text>
+  </g>
+  <text x="1708" y="1080" text-anchor="end" fill="#65736B" font-family="DejaVu Sans Mono, monospace" font-size="13" letter-spacing="1.6">UXU-ILHAN  ·  PERSONAL BUILD  ·  2026</text>
+</svg>

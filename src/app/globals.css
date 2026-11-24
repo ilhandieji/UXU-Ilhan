@@ -38,51 +38,77 @@
   --color-foreground: var(--foreground);
   --color-background: var(--background);
   --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-surface: var(--brand-surface);
+  --color-brand-edge: var(--brand-edge);
+  --color-subtle: var(--subtle);
+  --color-grid-line: var(--grid-line);
+  /* Brand mark motion (used with motion-safe: only) */
+  --animate-uxu-orbit: uxu-orbit 6s linear infinite;
+  --animate-uxu-pulse: uxu-pulse 2.4s ease-in-out infinite;
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
 }
 
-/* Dark only — no light theme and no switch */
+/* Dark only — no light theme and no switch. Values come from the UXU-Ilhan brand palette
+   (public/brand/uxu-ilhan-brand-reference.svg): dark UI, off-white, brand green, muted text. */
 :root {
   color-scheme: dark;
-  --radius: 0.625rem;
-  --background: oklch(0.13 0 0);
-  --foreground: oklch(0.97 0 0);
-  --card: oklch(0.17 0 0);
-  --card-foreground: oklch(0.97 0 0);
-  --popover: oklch(0.19 0 0);
-  --popover-foreground: oklch(0.97 0 0);
-  --primary: oklch(0.92 0 0);
-  --primary-foreground: oklch(0.2 0 0);
-  --secondary: oklch(0.25 0 0);
-  --secondary-foreground: oklch(0.97 0 0);
-  --muted: oklch(0.25 0 0);
-  --muted-foreground: oklch(0.72 0 0);
-  --accent: oklch(0.25 0 0);
-  --accent-foreground: oklch(0.97 0 0);
-  --destructive: oklch(0.7 0.19 22);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.6 0 0);
-  --brand: oklch(0.8 0.18 155);
-  --sidebar: oklch(0.15 0 0);
-  --sidebar-foreground: oklch(0.97 0 0);
-  --sidebar-primary: oklch(0.8 0.18 155);
-  --sidebar-primary-foreground: oklch(0.15 0 0);
-  --sidebar-accent: oklch(0.24 0 0);
-  --sidebar-accent-foreground: oklch(0.97 0 0);
-  --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: oklch(0.6 0 0);
+  --radius: 0.75rem;
+  --background: #0e1310;
+  --foreground: #f0f4f1;
+  --card: #171d1a;
+  --card-foreground: #f0f4f1;
+  --popover: #151b17;
+  --popover-foreground: #f0f4f1;
+  --primary: #3bdf89;
+  --primary-foreground: #0c100e;
+  --secondary: #1a211d;
+  --secondary-foreground: #f0f4f1;
+  --muted: #1a211d;
+  --muted-foreground: #a2aea7;
+  --accent: #1f2823;
+  --accent-foreground: #f0f4f1;
+  --destructive: #ff6b5e;
+  --border: #2b3530;
+  --input: #344138;
+  --ring: #3bdf89;
+  --brand: #3bdf89;
+  --brand-soft: #69f0a9;
+  --brand-surface: #1d3328;
+  --brand-edge: #2a5c43;
+  /* Decorative / large labels only (≈3.5:1 on the background) */
+  --subtle: #65736b;
+  --grid-line: rgb(138 160 148 / 0.055);
+  --sidebar: #0c100e;
+  --sidebar-foreground: #f0f4f1;
+  --sidebar-primary: #3bdf89;
+  --sidebar-primary-foreground: #0c100e;
+  --sidebar-accent: #1a211d;
+  --sidebar-accent-foreground: #f0f4f1;
+  --sidebar-border: #2b3530;
+  --sidebar-ring: #3bdf89;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  /* Brand surface: soft diagonal gradient + the 48px grid from the identity sheet */
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background-color: var(--background);
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(135deg, #151b17, #0c100e);
+    background-size:
+      48px 48px,
+      48px 48px,
+      100% 100%;
+    background-attachment: fixed;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
@@ -90,5 +116,23 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+@keyframes uxu-orbit {
+  to {
+    stroke-dashoffset: -44;
+  }
+}
+
+@keyframes uxu-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.7);
   }
 }

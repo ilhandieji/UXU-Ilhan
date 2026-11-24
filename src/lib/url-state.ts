@@ -5,16 +5,20 @@ import { isCssColor } from "@/lib/color";
 import type { Control, Framework, OptionValue, RegistryEntry, StudioState } from "@/registry/types";
 
 export type StudioTab = "preview" | "code";
+export type Viewport = "full" | "tablet" | "mobile";
+export const VIEWPORTS: Viewport[] = ["full", "tablet", "mobile"];
 
 export interface StudioUrlState {
   state: StudioState;
   framework: Framework;
   tab: StudioTab;
+  viewport: Viewport;
 }
 
 /** Reserved query keys (never used as control keys) */
 const FRAMEWORK = "fw";
 const TAB = "tab";
+const VIEWPORT = "vp";
 const MAX_TEXT = 20000;
 
 function controlsOf(entry: RegistryEntry): Map<string, Control> {
@@ -28,13 +32,14 @@ const encodeValue = (value: OptionValue) =>
 
 export function encodeStudio(
   entry: RegistryEntry,
-  { state, framework, tab }: StudioUrlState,
+  { state, framework, tab, viewport }: StudioUrlState,
 ): string {
   const initial = entry.initialState();
   const controls = controlsOf(entry);
   const params = new URLSearchParams();
   if (framework !== "react") params.set(FRAMEWORK, framework);
   if (tab !== "preview") params.set(TAB, tab);
+  if (viewport !== "full") params.set(VIEWPORT, viewport);
   for (const [key, value] of Object.entries(state.options)) {
     if (initial.options[key] !== value) params.set(key, encodeValue(value));
   }
@@ -84,7 +89,7 @@ export function decodeStudio(entry: RegistryEntry, params: URLSearchParams): Stu
   const tokens: Record<string, string> = {};
 
   for (const [key, raw] of params) {
-    if (key === FRAMEWORK || key === TAB) continue;
+    if (key === FRAMEWORK || key === TAB || key === VIEWPORT) continue;
     const control = controls.get(key);
     if (key in initial.options) {
       const value = readOption(raw, initial.options[key], control);
@@ -100,6 +105,7 @@ export function decodeStudio(entry: RegistryEntry, params: URLSearchParams): Stu
     state: { options, tokens },
     framework: params.get(FRAMEWORK) === "vanilla" ? "vanilla" : "react",
     tab: params.get(TAB) === "code" ? "code" : "preview",
+    viewport: VIEWPORTS.find((v) => v === params.get(VIEWPORT)) ?? "full",
   };
 }
 

@@ -2,7 +2,7 @@
 
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { ColorPicker } from "@/components/color-picker";
+import { ColorPicker, ContrastBadge } from "@/components/color-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -29,11 +29,13 @@ function ControlRow({
   value,
   onChange,
   themeColors,
+  contrastWith,
 }: {
   control: Control;
   value: OptionValue;
   onChange: (value: OptionValue) => void;
   themeColors: string[];
+  contrastWith?: string;
 }) {
   const id = `ctl-${control.key}`;
   const label = (
@@ -53,13 +55,19 @@ function ControlRow({
     case "color":
       return (
         <div className="flex items-center justify-between gap-3">
-          {label}
+          <div className="flex min-w-0 flex-col items-start gap-0.5">
+            {label}
+            {contrastWith ? (
+              <ContrastBadge color={String(value)} background={contrastWith} />
+            ) : null}
+          </div>
           <div className="flex items-center gap-2">
             <ColorPicker
               label={control.label}
               value={String(value)}
               onChange={onChange}
               themeColors={themeColors}
+              contrastWith={contrastWith}
             />
             <Input
               id={id}
@@ -129,15 +137,17 @@ function ControlRow({
 
 export function CustomizePanel({ entry, state, onOption, onToken }: Props) {
   const baseline = entry.baseline(state);
+  const colorOf = (key: string) =>
+    String(state.tokens[key] ?? baseline[key] ?? state.options[key] ?? "");
+  const contrastFor = (key: string) => {
+    const background = entry.contrastPairs?.[key];
+    return background ? colorOf(background) : undefined;
+  };
   // Current colors of this component, offered first in every color picker
   const themeColors = entry.controls
     .flatMap((group) => group.controls)
     .filter((control) => control.type === "color")
-    .map((control) =>
-      String(
-        state.tokens[control.key] ?? baseline[control.key] ?? state.options[control.key] ?? "",
-      ),
-    );
+    .map((control) => colorOf(control.key));
 
   return (
     <aside
@@ -174,6 +184,7 @@ export function CustomizePanel({ entry, state, onOption, onToken }: Props) {
                     value={state.tokens[control.key] ?? baseline[control.key] ?? ""}
                     onChange={(v) => onToken(control.key, String(v))}
                     themeColors={themeColors}
+                    contrastWith={contrastFor(control.key)}
                   />
                 ) : (
                   <ControlRow

@@ -32,10 +32,16 @@ const pascal = name
   .map((p) => p[0].toUpperCase() + p.slice(1))
   .join("");
 const camelName = pascal[0].toLowerCase() + pascal.slice(1);
+/** Display name: "scramble-text" → "Scramble Text" */
+const title = name
+  .split("-")
+  .map((p) => p[0].toUpperCase() + p.slice(1))
+  .join(" ");
 const fill = (text: string): string =>
   text
     .replaceAll("__name__Meta", `${camelName}Meta`)
     .replaceAll("__name__: RegistryEntry", `${camelName}: RegistryEntry`)
+    .replaceAll("__Title__", title)
     .replaceAll("__name__", name)
     .replaceAll("__Name__", pascal);
 
@@ -82,10 +88,6 @@ insertBefore(
 insertBefore("src/registry/index.ts", "// @new-entry", `${camelName},`);
 
 // Repo docs: root README component list and ROADMAP entry (the docs check fails if either is missing)
-const title = name
-  .split("-")
-  .map((p) => p[0].toUpperCase() + p.slice(1))
-  .join(" ");
 const readmePath = join(root, "README.md");
 const readme = readFileSync(readmePath, "utf8");
 const listLine = /^(- کامپوننت‌ها:.*)$/m;

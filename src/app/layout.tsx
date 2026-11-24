@@ -1,7 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Konami } from "@/components/konami";
+import { SiteFooter } from "@/components/site-footer";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
@@ -11,8 +13,12 @@ const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrai
 
 export const metadata: Metadata = {
   title: { default: "UXU-Ilhan", template: "%s · UXU-Ilhan" },
-  description: "Copy-paste components for React and Vanilla. Customize, then copy.",
+  applicationName: "UXU-Ilhan",
+  description:
+    "User experience × user interface — copy-paste components for React and Vanilla. Customize, then copy.",
 };
+
+export const viewport: Viewport = { themeColor: "#0E1310" };
 
 // Fonts a component can be customized with — loaded by real family name so copied values stay valid elsewhere
 const PREVIEW_FONTS =
@@ -29,10 +35,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <TooltipProvider>
           <SidebarProvider>
             <AppSidebar />
-            <SidebarInset>{children}</SidebarInset>
+            {/* Transparent so the brand grid on <body> shows through */}
+            <SidebarInset className="bg-transparent">
+              {children}
+              <SiteFooter />
+            </SidebarInset>
           </SidebarProvider>
         </TooltipProvider>
-        <Toaster theme="dark" position="bottom-right" />
+        <Toaster
+          theme="dark"
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: "var(--popover)",
+              color: "var(--popover-foreground)",
+              borderColor: "var(--border)",
+            },
+          }}
+        />
+        <Konami />
       </body>
     </html>
   );

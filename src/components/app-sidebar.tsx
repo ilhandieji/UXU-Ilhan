@@ -1,6 +1,6 @@
 "use client";
 
-import { Boxes, Home, TerminalSquare, Type } from "lucide-react";
+import { Home, TerminalSquare, Type } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -15,6 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { BrandMark, BrandWordmark } from "@/components/brand";
 import { components } from "@/registry/meta";
 
 export function AppSidebar() {
@@ -25,10 +26,11 @@ export function AppSidebar() {
       <SidebarHeader className="px-4 py-4">
         <Link
           href="/"
-          className="flex items-center gap-2 font-mono text-sm font-semibold tracking-tight"
+          aria-label="UXU-Ilhan home"
+          className="flex items-center gap-2.5 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         >
-          <Boxes className="size-4 text-brand" aria-hidden />
-          UXU-Ilhan
+          <BrandMark size={34} />
+          <BrandWordmark />
         </Link>
       </SidebarHeader>
       <SidebarContent>
@@ -83,8 +85,11 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="px-4 pb-4 text-xs text-muted-foreground">
-        React · Vanilla · Tailwind v4
+      <SidebarFooter className="px-4 pb-4">
+        <p className="flex items-center gap-2 font-mono text-[10px] tracking-[0.16em] text-muted-foreground">
+          <span className="size-1.5 rounded-full bg-brand" aria-hidden />
+          PERSONAL COMPONENT SYSTEM
+        </p>
       </SidebarFooter>
     </Sidebar>
   );

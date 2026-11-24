@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>UXU-Ilhan symbol</title>
+  <rect x="20" y="20" width="472" height="472" rx="112" fill="#101412" stroke="#2B3530" stroke-width="2"/>
+  <g transform="translate(42 142) scale(1.02)">
+      <!-- The two U channels: UX and UI, mirrored around the shared center -->
+      <path d="M 74 28 V 113 C 74 141 91 158 119 158 H 145 C 173 158 190 141 190 113 V 28"
+            fill="none" stroke="#F0F4F1" stroke-width="19" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 230 28 V 113 C 230 141 247 158 275 158 H 301 C 329 158 346 141 346 113 V 28"
+            fill="none" stroke="#F0F4F1" stroke-width="19" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Crossing rails: one route is highlighted to express the two implementations -->
+      <path d="M 168 59 L 252 133" fill="none" stroke="#F0F4F1" stroke-width="17" stroke-linecap="round"/>
+      <path d="M 252 59 L 168 133" fill="none" stroke="#3BDF89" stroke-width="17" stroke-linecap="round"/>
+      <!-- Live interaction point / cursor node -->
+      <circle cx="210" cy="96" r="19" fill="#101412" stroke="#3BDF89" stroke-width="5"/>
+      <circle cx="210" cy="96" r="5" fill="#3BDF89"/>
+      <!-- Subtle orbit trace, a nod to the orbit and glow components -->
+      <path d="M 172 96 A 38 19 0 0 1 248 96" fill="none" stroke="#3BDF89" stroke-width="2.5" stroke-dasharray="3 8" opacity=".75"/>
+    </g>
+</svg>

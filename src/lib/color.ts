@@ -43,3 +43,30 @@ export function hexToRgba(hex: string): [number, number, number, number] {
 export function rgbaToHex(r: number, g: number, b: number, a = 1): string {
   return `#${hex2(r)}${hex2(g)}${hex2(b)}${a < 1 ? hex2(a * 255) : ""}`;
 }
+
+/** WCAG relative luminance of an opaque color */
+function relativeLuminance([r, g, b]: number[]): number {
+  const channel = (v: number) => {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+}
+
+/**
+ * WCAG contrast ratio (1–21). A translucent background is composited over black (the playground
+ * is dark-only), then a translucent foreground over that background.
+ */
+export function contrastRatio(foreground: string, background: string): number {
+  const [r0, g0, b0, a0] = hexToRgba(background);
+  const [br, bg, bb] = [r0 * a0, g0 * a0, b0 * a0];
+  const [fr, fg, fb, fa] = hexToRgba(foreground);
+  const mix = (f: number, b: number) => f * fa + b * (1 - fa);
+  const l1 = relativeLuminance([mix(fr, br), mix(fg, bg), mix(fb, bb)]);
+  const l2 = relativeLuminance([br, bg, bb]);
+  return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+}
+
+/** WCAG level for normal text */
+export const contrastLevel = (ratio: number) =>
+  ratio >= 7 ? "AAA" : ratio >= 4.5 ? "AA" : ratio >= 3 ? "AA large" : "Fail";

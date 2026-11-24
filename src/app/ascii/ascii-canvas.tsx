@@ -15,6 +15,8 @@ type Props = {
   caret?: { x: number; y: number } | null;
   /** Show cell grid lines (drawing mode) */
   showGrid?: boolean;
+  /** Faded grid painted underneath (onion skin of the previous animation frame) */
+  onion?: Grid | null;
   onCellDown?: (x: number, y: number, e: PointerEvent<HTMLCanvasElement>) => void;
   onCellMove?: (x: number, y: number, e: PointerEvent<HTMLCanvasElement>) => void;
   onCellUp?: (x: number, y: number) => void;
@@ -29,6 +31,7 @@ export function AsciiCanvas({
   background,
   caret,
   showGrid,
+  onion,
   onCellDown,
   onCellMove,
   onCellUp,
@@ -65,6 +68,14 @@ export function AsciiCanvas({
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.fillStyle = background;
     ctx.fillRect(0, 0, w, h);
+    if (onion) {
+      paintGrid(ctx, onion, { cell: size, fontSize, font: CANVAS_FONT, foreground });
+      // Wash the onion skin out with the background so it reads as a hint
+      ctx.globalAlpha = 0.78;
+      ctx.fillStyle = background;
+      ctx.fillRect(0, 0, w, h);
+      ctx.globalAlpha = 1;
+    }
     paintGrid(ctx, grid, { cell: size, fontSize, font: CANVAS_FONT, foreground });
     if (showGrid) {
       ctx.strokeStyle = "rgb(255 255 255 / 0.06)";
@@ -84,7 +95,7 @@ export function AsciiCanvas({
       ctx.fillStyle = "rgb(56 189 248 / 0.8)";
       ctx.fillRect(caret.x * size.width, caret.y * size.height + size.height - 2, size.width, 2);
     }
-  }, [grid, fontSize, foreground, background, caret, showGrid, fontReady]);
+  }, [grid, fontSize, foreground, background, caret, showGrid, onion, fontReady]);
 
   const toCell = (e: PointerEvent<HTMLCanvasElement>): [number, number] => {
     const rect = e.currentTarget.getBoundingClientRect();

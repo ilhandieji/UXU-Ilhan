@@ -7,6 +7,8 @@ import {
   sizes,
   themes,
   variants,
+  type TerminalBootLine,
+  type TerminalSoundProfile,
   type TerminalOptions,
   type TerminalSize,
   type TerminalThemeName,
@@ -14,8 +16,12 @@ import {
 } from "@lib/terminal/react/terminal.config";
 import { createTerminal } from "@lib/terminal/vanilla/terminal";
 import { CORE_FONTS, DEFAULT_FONT, renderText, type AsciiLayout } from "@/lib/ascii/fonts";
-import { readBannerArt } from "@/lib/ascii/terminal-banner";
-import { hasKey, setValue } from "@/lib/customize-config";
+import {
+  readBannerAnimation,
+  readBannerArt,
+  type BannerAnimation,
+} from "@/lib/ascii/terminal-banner";
+import { hasKey, setValue, type Literal } from "@/lib/customize-config";
 import { sitePages } from "./meta";
 import { terminalMeta } from "./terminal.meta";
 import type { RegistryEntry, StudioState } from "./types";
@@ -39,9 +45,72 @@ const initialOptions = {
   bannerText: "UXU",
   bannerFont: DEFAULT_FONT,
   bannerLayout: "default",
+  games: defaults.games,
+  easterEggs: defaults.easterEggs,
+  // Playground-only: turned into `sound`, `bootSequence` and `animations` below
+  soundEnabled: defaults.sound.enabled,
+  soundProfile: defaults.sound.profile as string,
+  bootPreset: "none",
+  bootClearAfter: defaults.bootSequence.clearAfter,
+  animation: "none",
 };
 
-const BANNER_KEYS = new Set(["bannerMode", "bannerText", "bannerFont", "bannerLayout"]);
+const BANNER_KEYS = new Set([
+  "bannerMode",
+  "bannerText",
+  "bannerFont",
+  "bannerLayout",
+  "soundEnabled",
+  "soundProfile",
+  "bootPreset",
+  "bootClearAfter",
+  "animation",
+]);
+
+const ok = (text: string, delay?: number): TerminalBootLine => ({ text, status: "ok", delay });
+const BOOT_PRESETS: Record<string, TerminalBootLine[]> = {
+  linux: [
+    { text: "Booting UXU kernel 6.6.6-uxu …", delay: 200 },
+    ok("Mounted /dev/uxu0 on /"),
+    ok("Started Network Manager"),
+    ok("Reached target Graphical Interface"),
+    { text: "Starting session for guest …", status: "info", delay: 300 },
+  ],
+  bios: [
+    { text: "UXU BIOS v1.01 — (c) Ilhan Systems", delay: 100 },
+    { text: "Memory test: 65536K OK", delay: 500 },
+    { text: "Detecting drives … [SSD0] 512 GB", delay: 400 },
+    { text: "Press DEL to enter setup", status: "warn", delay: 300 },
+    { text: "Loading operating system …", delay: 600 },
+  ],
+  hacker: [
+    { text: "establishing secure channel …", status: "info", delay: 250 },
+    ok("handshake complete", 400),
+    { text: "bypassing firewall layer 3/3 …", status: "warn", delay: 500 },
+    ok("access granted", 500),
+    { text: "welcome back, operator.", delay: 300 },
+  ],
+};
+
+function extras(state: StudioState) {
+  const o = state.options;
+  const animation = o.animation === "editor" ? readBannerAnimation() : null;
+  return {
+    games: Boolean(o.games),
+    easterEggs: Boolean(o.easterEggs),
+    sound: {
+      ...defaults.sound,
+      enabled: Boolean(o.soundEnabled),
+      profile: o.soundProfile as TerminalSoundProfile,
+    },
+    bootSequence: {
+      ...defaults.bootSequence,
+      lines: BOOT_PRESETS[String(o.bootPreset)] ?? [],
+      clearAfter: Boolean(o.bootClearAfter),
+    },
+    animations: (animation ? { intro: animation } : {}) as Record<string, BannerAnimation>,
+  };
+}
 
 /** Banner lines for the current state; null = keep the config's default banner */
 function bannerLines(state: StudioState): string[] | null {
@@ -88,18 +157,64 @@ function toOptions(state: StudioState): TerminalOptions {
     placeholder: String(o.placeholder),
     site: { ...defaults.site, name: String(o["site.name"]), version: String(o["site.version"]) },
     pages: sitePages(),
+    ...extras(state),
     ...(bannerLines(state) ? { banner: bannerLines(state) as string[] } : {}),
   };
 }
 
 function Preview({ state }: { state: StudioState }) {
   const router = useRouter();
-  return <Terminal {...toOptions(state)} navigate={(path) => router.push(path)} />;
+  // A new boot preset remounts the terminal so the sequence plays again
+  return (
+    <Terminal
+      key={`${state.options.bootPreset}`}
+      {...toOptions(state)}
+      navigate={(path) => router.push(path)}
+    />
+  );
 }
 
 export const terminal: RegistryEntry = {
   ...terminalMeta,
   themeKey: "theme",
+  presets: [
+    {
+      name: "Hacker",
+      options: { theme: "matrix", glow: true, size: "md" },
+      tokens: { "font-family": "'JetBrains Mono', monospace" },
+    },
+    {
+      name: "Retro amber",
+      options: { theme: "amber", size: "lg" },
+      tokens: { "font-family": "'Space Mono', monospace", radius: "2px" },
+    },
+    { name: "Clean light", options: { theme: "light", variant: "minimal", glow: false } },
+    { name: "Wide & tall", tokens: { width: "100%", height: "600px" } },
+    {
+      name: "Big banner",
+      options: { bannerMode: "text", bannerText: "HELLO", bannerFont: "Doom" },
+    },
+  ],
+  randomizeSkip: [
+    "bannerMode",
+    "bannerFont",
+    "bannerLayout",
+    "width",
+    "soundEnabled",
+    "bootPreset",
+    "animation",
+  ],
+  palette: (p) => ({
+    bg: p.bg,
+    fg: p.fg,
+    dim: p.muted,
+    accent: p.accent,
+    cursor: p.accent,
+    border: p.muted,
+    "titlebar-bg": p.bg,
+    "titlebar-fg": p.muted,
+  }),
+  contrastPairs: { fg: "bg", dim: "bg", accent: "bg", error: "bg", cursor: "bg" },
   controls: [
     {
       title: "Theme",
@@ -239,6 +354,46 @@ export const terminal: RegistryEntry = {
       ],
     },
     {
+      title: "Fun",
+      controls: [
+        { type: "switch", target: "option", key: "games", label: "Games (typing, guess, quest)" },
+        { type: "switch", target: "option", key: "easterEggs", label: "Easter eggs" },
+        { type: "switch", target: "option", key: "soundEnabled", label: "Key sounds" },
+        {
+          type: "select",
+          target: "option",
+          key: "soundProfile",
+          label: "Sound",
+          choices: ["mechanical", "soft", "retro"].map((v) => ({ label: v, value: v })),
+        },
+        {
+          type: "select",
+          target: "option",
+          key: "bootPreset",
+          label: "Boot sequence",
+          choices: ["none", ...Object.keys(BOOT_PRESETS)].map((v) => ({ label: v, value: v })),
+        },
+        { type: "switch", target: "option", key: "bootClearAfter", label: "Clear boot lines" },
+        {
+          type: "select",
+          target: "option",
+          key: "animation",
+          label: "`play` animation",
+          choices: [
+            { label: "None", value: "none" },
+            { label: "From ASCII Editor", value: "editor" },
+          ],
+        },
+        {
+          type: "link",
+          target: "none",
+          key: "animationEditor",
+          label: "Make an animation",
+          href: () => "/ascii?tab=animate",
+        },
+      ],
+    },
+    {
       title: "Content",
       controls: [
         { type: "text", target: "option", key: "user", label: "User" },
@@ -257,8 +412,19 @@ export const terminal: RegistryEntry = {
   },
   Preview,
   mountVanilla(el, state) {
-    const term = createTerminal(el, toOptions(state));
-    return { update: (next) => term.update(toOptions(next)), destroy: () => term.destroy() };
+    let term = createTerminal(el, toOptions(state));
+    let boot = state.options.bootPreset;
+    return {
+      update(next) {
+        // A new boot preset remounts the terminal so the sequence plays again
+        if (next.options.bootPreset !== boot) {
+          boot = next.options.bootPreset;
+          term.destroy();
+          term = createTerminal(el, toOptions(next));
+        } else term.update(toOptions(next));
+      },
+      destroy: () => term.destroy(),
+    };
   },
   customize(source, state) {
     const { base, size } = read(state);
@@ -281,6 +447,20 @@ export const terminal: RegistryEntry = {
     }
     const banner = bannerLines(state);
     if (banner) out = setValue(out, ["defaults"], "banner", banner);
+    const extra = extras(state);
+    const o = state.options;
+    if (
+      o.soundEnabled !== initialOptions.soundEnabled ||
+      o.soundProfile !== initialOptions.soundProfile
+    )
+      out = setValue(out, ["defaults"], "sound", extra.sound);
+    if (extra.bootSequence.lines.length || o.bootClearAfter !== initialOptions.bootClearAfter)
+      out = setValue(out, ["defaults"], "bootSequence", {
+        ...extra.bootSequence,
+        lines: extra.bootSequence.lines.map((line) => ({ ...line })),
+      } as unknown as Literal);
+    if (Object.keys(extra.animations).length)
+      out = setValue(out, ["defaults"], "animations", extra.animations as unknown as Literal);
     return out;
   },
   usage: (framework) =>

@@ -65,69 +65,80 @@ term.destroy();
 در سایت Playground:
 
 - **Width / Height:** عرض (درصد، توکن `width`) و ارتفاع (توکن `height`) قابل تنظیم‌اند و در `terminal.config.ts` کپی‌شده می‌آیند.
+- **Fun:** بازی‌ها، easter egg، صدای کلید (mechanical / soft / retro)، سه boot sequence آماده (linux، bios، hacker) و انیمیشن `play` از تب Animate ابزار ASCII Editor؛ همه در config کپی‌شده bake می‌شوند.
 - **Banner:** «From text» متن و فونت (۱۰ فونت FIGlet) و فاصله‌ی حروف را می‌گیرد و خطوط ASCII را می‌سازد؛ «From ASCII Editor» اثر ارسال‌شده از ابزار `/ascii` را استفاده می‌کند. در هر دو حالت فقط خطوط نهایی در `banner` فایل config کپی‌شده نوشته می‌شوند؛ کامپوننت dependency جدیدی نمی‌گیرد.
 
 ## کامندها
 
 همه‌ی خروجی‌ها به انگلیسی و با فرمت لینوکسی‌اند. هر کامند را می‌شود با `commands` بازنویسی کرد.
 
-| کامند                | کار                                                                                              |
-| -------------------- | ------------------------------------------------------------------------------------------------ |
-| `help`               | لیست همه‌ی کامندها با توضیح (در یک صفحه)                                                         |
-| `man <command>`      | نحوه‌ی استفاده (NAME / SYNOPSIS)                                                                 |
-| `version`            | نام و نسخه‌ی سایت از `site` (مثل `UXU-Ilhan v1.01.1`)                                            |
-| `clear`              | پاک کردن صفحه                                                                                    |
-| `banner`             | چاپ دوباره‌ی بنر ASCII                                                                           |
-| `fastfetch`          | لوگوی ASCII سمت چپ + سایت، زبان، کیبورد، رزولوشن مرورگر، هسته‌ی CPU، RAM (یا N/A)، منطقه‌ی زمانی |
-| `whoami`             | `currentUser` یا `guest`                                                                         |
-| `history`            | کامندهای همین نشست (فقط در حافظه؛ با رفرش پاک می‌شود)                                            |
-| `date`               | تاریخ و ساعت کلاینت با فرمت `date` لینوکس                                                        |
-| `ls`                 | صفحه‌های قابل رفتن (`pages`)                                                                     |
-| `cd <page>`          | رفتن به صفحه (`cd blog`، `cd blog/`، `cd ..`، `cd ~`)                                            |
-| `pwd`                | آدرس کامل صفحه‌ی فعلی                                                                            |
-| `back`               | صفحه‌ی قبلی (`onBack` یا `history.back()`)                                                       |
-| `sitemap`            | درخت صفحه‌ها با آدرس                                                                             |
-| `find <word>`        | جستجو فقط در صفحه‌ی فعلی (تعداد + ۵ نمونه + اسکرول به اولین مورد)                                |
-| `calc <expr>`        | ماشین‌حساب امن (`+ - * / % ^`، پرانتز، `pi`، `e`، `sqrt` و ...)                                  |
-| `sha256 <text>`      | هش واقعی SHA-256                                                                                 |
-| `base64 [-d] <text>` | encode / decode (پشتیبانی UTF-8)                                                                 |
-| `rot13 <text>`       | رمز ROT13                                                                                        |
-| `xxd <text>`         | hex dump با فرمت `xxd`                                                                           |
-| `echo <text>`        | چاپ متن (پشتیبانی از `"..."`)                                                                    |
-| `ping [-c n] <host>` | پینگ شبیه‌سازی‌شده با خروجی دقیق لینوکس                                                          |
-| `traceroute <host>`  | مسیر شبیه‌سازی‌شده                                                                               |
-| `whois <domain>`     | ایستر اگ با اطلاعات ساختگی                                                                       |
-| `ifconfig`           | اینترفیس‌های نمایشی از `showcase.ifconfig`                                                       |
-| `nmap`               | اسکن نمایشی از `showcase.wifi` و `showcase.hosts` با زمان واقعی                                  |
-| `curl <url>`         | ایستر اگ: `curl: (7) Failed to connect — this is a browser tab, not a shell`                     |
+| کامند                          | کار                                                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `help`                         | لیست همه‌ی کامندها با توضیح (در یک صفحه)                                                         |
+| `man <command>`                | نحوه‌ی استفاده (NAME / SYNOPSIS)                                                                 |
+| `version`                      | نام و نسخه‌ی سایت از `site` (مثل `UXU-Ilhan v1.01.1`)                                            |
+| `clear`                        | پاک کردن صفحه                                                                                    |
+| `banner`                       | چاپ دوباره‌ی بنر ASCII                                                                           |
+| `fastfetch`                    | لوگوی ASCII سمت چپ + سایت، زبان، کیبورد، رزولوشن مرورگر، هسته‌ی CPU، RAM (یا N/A)، منطقه‌ی زمانی |
+| `whoami`                       | `currentUser` یا `guest`                                                                         |
+| `history`                      | کامندهای همین نشست (فقط در حافظه؛ با رفرش پاک می‌شود)                                            |
+| `date`                         | تاریخ و ساعت کلاینت با فرمت `date` لینوکس                                                        |
+| `ls`                           | صفحه‌های قابل رفتن (`pages`)                                                                     |
+| `cd <page>`                    | رفتن به صفحه (`cd blog`، `cd blog/`، `cd ..`، `cd ~`)                                            |
+| `pwd`                          | آدرس کامل صفحه‌ی فعلی                                                                            |
+| `back`                         | صفحه‌ی قبلی (`onBack` یا `history.back()`)                                                       |
+| `sitemap`                      | درخت صفحه‌ها با آدرس                                                                             |
+| `find <word>`                  | جستجو فقط در صفحه‌ی فعلی (تعداد + ۵ نمونه + اسکرول به اولین مورد)                                |
+| `calc <expr>`                  | ماشین‌حساب امن (`+ - * / % ^`، پرانتز، `pi`، `e`، `sqrt` و ...)                                  |
+| `sha256 <text>`                | هش واقعی SHA-256                                                                                 |
+| `base64 [-d] <text>`           | encode / decode (پشتیبانی UTF-8)                                                                 |
+| `rot13 <text>`                 | رمز ROT13                                                                                        |
+| `xxd <text>`                   | hex dump با فرمت `xxd`                                                                           |
+| `echo <text>`                  | چاپ متن (پشتیبانی از `"..."`)                                                                    |
+| `ping [-c n] <host>`           | پینگ شبیه‌سازی‌شده با خروجی دقیق لینوکس                                                          |
+| `traceroute <host>`            | مسیر شبیه‌سازی‌شده                                                                               |
+| `whois <domain>`               | ایستر اگ با اطلاعات ساختگی                                                                       |
+| `ifconfig`                     | اینترفیس‌های نمایشی از `showcase.ifconfig`                                                       |
+| `nmap`                         | اسکن نمایشی از `showcase.wifi` و `showcase.hosts` با زمان واقعی                                  |
+| `curl <url>`                   | ایستر اگ: `curl: (7) Failed to connect — this is a browser tab, not a shell`                     |
+| `typing`                       | تست سرعت تایپ (WPM و دقت) — گروه games، با option `games`                                        |
+| `guess`                        | حدس عدد ۱ تا ۱۰۰ در ۷ تلاش — games                                                               |
+| `quest`                        | ماجرای متنی کوچک (look، go، take، inventory، quit) — games                                       |
+| `play [name]`                  | پخش انیمیشن ASCII از option `animations` (حدود ۳ ثانیه)                                          |
+| `sudo` · `rm -rf /` · `matrix` | easter egg مخفی (در `help` نمی‌آیند)، با option `easterEggs`                                     |
 
 ## Options / Props (قرارداد مشترک)
 
-| نام             | نوع                                                                    | پیش‌فرض                                | توضیح                             |
-| --------------- | ---------------------------------------------------------------------- | -------------------------------------- | --------------------------------- |
-| `theme`         | `'matrix' \| 'classic-black' \| 'amber' \| 'light' \| Partial<Tokens>` | `'matrix'`                             | preset یا توکن‌های سفارشی         |
-| `variant`       | `'window' \| 'fullscreen' \| 'minimal'`                                | `'window'`                             | ساختار ظاهری                      |
-| `size`          | `'sm' \| 'md' \| 'lg'`                                                 | `'md'`                                 | مقیاس                             |
-| `glow`          | `boolean`                                                              | `true`                                 | درخشش سبز                         |
-| `user` / `host` | `string`                                                               | `'guest'` / `'portal'`                 | اجزای prompt                      |
-| `cwd`           | `string`                                                               | `''` (خودکار از آدرس، مثل `~/blog`)    | مسیر prompt                       |
-| `currentUser`   | `string \| null`                                                       | —                                      | کاربر لاگین‌شده (whoami و prompt) |
-| `title`         | `string`                                                               | `user@host:cwd`                        | عنوان نوار پنجره                  |
-| `banner`        | `string[] \| false`                                                    | ASCII `UXU-ILHAN`                      | بنر ابتدایی و کامند `banner`      |
-| `subtitle`      | `string`                                                               | `'UXU-Ilhan v1.01.1 — web terminal'`   |                                   |
-| `boot`          | `{ label, value }[]`                                                   | session / filesystem                   | خطوط وضعیت                        |
-| `help`          | `{ name, description }[]`                                              | help / fastfetch / cd                  | راهنمای کوتاه زیر بنر             |
-| `placeholder`   | `string`                                                               | `'help · ls · fastfetch'`              | راهنمای ورودی خالی                |
-| `site`          | `{ name, version, language }`                                          | `UXU-Ilhan` / `v1.01.1` / `TypeScript` | برای `version` و `fastfetch`      |
-| `pages`         | `{ path, title }[]`                                                    | `[{ path: '/', title: 'home' }]`       | برای `cd`، `ls`، `sitemap`        |
-| `navigate`      | `(path) => void`                                                       | `location.assign`                      | ناوبری SPA (مثل `router.push`)    |
-| `onBack`        | `() => void`                                                           | `history.back()`                       | برای `back`                       |
-| `fastfetchArt`  | `string[]`                                                             | ASCII `UXU`                            | لوگوی سمت چپ `fastfetch`          |
-| `showcase`      | `{ ifconfig, wifi, hosts }`                                            | داده‌ی نمونه                           | خروجی `ifconfig` و `nmap`         |
-| `commands`      | `Record<string, fn \| { usage, description, run }>`                    | `{}`                                   | کامند سفارشی یا بازنویسی داخلی    |
-| `onCommand`     | `(line) => void`                                                       | —                                      | بعد از هر Enter                   |
+| نام             | نوع                                                                    | پیش‌فرض                                | توضیح                                    |
+| --------------- | ---------------------------------------------------------------------- | -------------------------------------- | ---------------------------------------- |
+| `theme`         | `'matrix' \| 'classic-black' \| 'amber' \| 'light' \| Partial<Tokens>` | `'matrix'`                             | preset یا توکن‌های سفارشی                |
+| `variant`       | `'window' \| 'fullscreen' \| 'minimal'`                                | `'window'`                             | ساختار ظاهری                             |
+| `size`          | `'sm' \| 'md' \| 'lg'`                                                 | `'md'`                                 | مقیاس                                    |
+| `glow`          | `boolean`                                                              | `true`                                 | درخشش سبز                                |
+| `user` / `host` | `string`                                                               | `'guest'` / `'portal'`                 | اجزای prompt                             |
+| `cwd`           | `string`                                                               | `''` (خودکار از آدرس، مثل `~/blog`)    | مسیر prompt                              |
+| `currentUser`   | `string \| null`                                                       | —                                      | کاربر لاگین‌شده (whoami و prompt)        |
+| `title`         | `string`                                                               | `user@host:cwd`                        | عنوان نوار پنجره                         |
+| `banner`        | `string[] \| false`                                                    | ASCII `UXU-ILHAN`                      | بنر ابتدایی و کامند `banner`             |
+| `subtitle`      | `string`                                                               | `'UXU-Ilhan v1.01.1 — web terminal'`   |                                          |
+| `boot`          | `{ label, value }[]`                                                   | session / filesystem                   | خطوط وضعیت                               |
+| `help`          | `{ name, description }[]`                                              | help / fastfetch / cd                  | راهنمای کوتاه زیر بنر                    |
+| `placeholder`   | `string`                                                               | `'help · ls · fastfetch'`              | راهنمای ورودی خالی                       |
+| `site`          | `{ name, version, language }`                                          | `UXU-Ilhan` / `v1.01.1` / `TypeScript` | برای `version` و `fastfetch`             |
+| `pages`         | `{ path, title }[]`                                                    | `[{ path: '/', title: 'home' }]`       | برای `cd`، `ls`، `sitemap`               |
+| `navigate`      | `(path) => void`                                                       | `location.assign`                      | ناوبری SPA (مثل `router.push`)           |
+| `onBack`        | `() => void`                                                           | `history.back()`                       | برای `back`                              |
+| `fastfetchArt`  | `string[]`                                                             | ASCII `UXU`                            | لوگوی سمت چپ `fastfetch`                 |
+| `showcase`      | `{ ifconfig, wifi, hosts }`                                            | داده‌ی نمونه                           | خروجی `ifconfig` و `nmap`                |
+| `commands`      | `Record<string, fn \| { usage, description, run }>`                    | `{}`                                   | کامند سفارشی یا بازنویسی داخلی           |
+| `games`         | `boolean`                                                              | `true`                                 | کامندهای typing / guess / quest          |
+| `easterEggs`    | `boolean`                                                              | `true`                                 | sudo / rm -rf / / matrix                 |
+| `sound`         | `{ enabled, volume, profile: 'mechanical' \| 'soft' \| 'retro' }`      | خاموش، `0.4`، `'mechanical'`           | صدای کلید با Web Audio (بدون فایل)       |
+| `bootSequence`  | `{ lines: { text, status?, delay? }[], speed, skippable, clearAfter }` | بدون خط                                | خطوط بوت قبل از بنر؛ کلید/کلیک رد می‌کند |
+| `animations`    | `Record<name, { frames: string[][]; fps }>`                            | `{}`                                   | برای کامند `play`                        |
+| `onCommand`     | `(line) => void`                                                       | —                                      | بعد از هر Enter                          |
 
-کامند سفارشی: `(args, ctx) => string | string[] | Output | void | Promise<...>`؛ `ctx.print` برای خروجی تدریجی و `ctx.sleep` برای تأخیر قابل توقف با `Ctrl+C`.
+کامند سفارشی: `(args, ctx) => string | string[] | Output | void | Promise<...>`؛ `ctx.print` برای خروجی تدریجی، `ctx.sleep` برای تأخیر قابل توقف با `Ctrl+C`، `ctx.read(prompt?)` برای گرفتن یک خط از کاربر (کامندهای تعاملی و بازی‌ها)، `ctx.readKey()` برای یک کلید، و `ctx.live(out)` که خروجی قابل جایگزینی برمی‌گرداند (انیمیشن و شمارنده). `sound` و `bootSequence` جزئی هم قابل‌قبول‌اند و با پیش‌فرض ادغام می‌شوند.
 
 API imperative: Vanilla `update(partial)`, `run(line)`, `clear()`, `focus()`, `destroy()` · React `ref` با `run(line)`, `clear()`, `focus()`.
 
@@ -156,7 +167,7 @@ Presetها: `matrix` (سیاه + سبز نئون)، `classic-black`، `amber`، 
 
 ## برنامه‌ریزی‌شده (هنوز پیاده نشده)
 
-- افکت Matrix Rain اختیاری پشت ترمینال
+- پس‌زمینه‌ی باران کد: کامپوننت جدای `matrix-rain` را پشت ترمینال بگذارید
 - variantهای تب‌دار و شل کلاسیک (کانسپت‌های C و B) و تم‌های بیشتر
 
 ## Accessibility

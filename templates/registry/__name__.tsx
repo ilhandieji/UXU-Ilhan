@@ -38,6 +38,12 @@ function toOptions(state: StudioState): __Name__Options {
 export const __name__: RegistryEntry = {
   ...__name__Meta,
   themeKey: "theme",
+  // Optional studio extras: ready-made looks, keys Randomize must keep, site palette mapping,
+  // and text-on-background pairs for the WCAG contrast badge
+  presets: [{ name: "Light", options: { theme: "light" } }],
+  randomizeSkip: ["label"],
+  palette: (p) => ({ bg: p.bg, fg: p.fg, border: p.muted }),
+  contrastPairs: { fg: "bg" },
   controls: [
     {
       title: "Theme",

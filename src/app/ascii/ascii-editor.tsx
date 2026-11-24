@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 import { ColorPicker } from "@/components/color-picker";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -27,17 +28,24 @@ import {
   type Grid,
   type History,
 } from "@/lib/ascii/grid";
+import { download, toGif } from "@/lib/ascii/export";
 import { convertImage, type ImageOptions } from "@/lib/ascii/image";
-import { saveBannerArt } from "@/lib/ascii/terminal-banner";
+import { qrGrid } from "@/lib/ascii/qr";
+import { saveBannerAnimation, saveBannerArt } from "@/lib/ascii/terminal-banner";
 import { replaceQuery } from "@/lib/url-state";
+import { AnimatePanel } from "./animate-panel";
 import { AsciiCanvas } from "./ascii-canvas";
 import { DrawPanel, TOOL_KEYS, type Brush, type Tool } from "./draw-panel";
 import {
   decodeSettings,
   DEFAULT_DRAWING,
   encodeSettings,
+  loadAnimation,
   loadDrawing,
+  MAX_FRAMES,
+  saveAnimation,
   saveDrawing,
+  type Animation,
   type EditorSettings,
   type EditorTab,
 } from "./editor-state";
@@ -91,17 +99,26 @@ export function AsciiEditor() {
 
   const textGrid = useMemo(
     () =>
-      fromLines(
-        renderText(settings.text, {
-          font: settings.font,
-          layout: settings.layout,
-          align: settings.align,
-          width: settings.wrap,
-        }),
-        settings.textColor || undefined,
-      ),
+      settings.textMode === "qr"
+        ? (qrGrid(
+            settings.text,
+            { level: settings.qrLevel, invert: settings.qrInvert, margin: 2 },
+            settings.textColor || undefined,
+          ) ?? fromLines(["", "  Text is too long for a QR code at this level."]))
+        : fromLines(
+            renderText(settings.text, {
+              font: settings.font,
+              layout: settings.layout,
+              align: settings.align,
+              width: settings.wrap,
+            }),
+            settings.textColor || undefined,
+          ),
     // fontTick re-renders once an on-demand font has loaded
     [
+      settings.textMode,
+      settings.qrLevel,
+      settings.qrInvert,
       settings.text,
       settings.font,
       settings.layout,
@@ -132,14 +149,72 @@ export function AsciiEditor() {
 
   // ---------- Drawing ----------
   // This component only renders on the client (useSearchParams inside Suspense), so localStorage is safe here
-  const [history, setHistory] = useState<History>(() =>
+  const [drawHistory, setDrawHistory] = useState<History>(() =>
     historyOf(
       typeof window === "undefined"
         ? createGrid(DEFAULT_DRAWING.width, DEFAULT_DRAWING.height)
         : loadDrawing(),
     ),
   );
-  useEffect(() => saveDrawing(history.present), [history.present]);
+  useEffect(() => saveDrawing(drawHistory.present), [drawHistory.present]);
+
+  // ---------- Animation ----------
+  // Each frame is edited with the drawing tools; its own undo history restarts when switching frames
+  const [anim, setAnim] = useState<Animation>(() => loadAnimation());
+  const [frameIndex, setFrameIndex] = useState(0);
+  const [animHistory, setAnimHistory] = useState<History>(() => historyOf(anim.frames[0]));
+  const [playing, setPlaying] = useState(false);
+  const [playIndex, setPlayIndex] = useState(0);
+  const [onion, setOnion] = useState(true);
+  useEffect(() => saveAnimation(anim), [anim]);
+  useEffect(() => {
+    setAnim((a) =>
+      a.frames[frameIndex] === animHistory.present
+        ? a
+        : { ...a, frames: a.frames.map((f, i) => (i === frameIndex ? animHistory.present : f)) },
+    );
+  }, [animHistory.present, frameIndex]);
+  useEffect(() => {
+    if (!playing) return;
+    const timer = setInterval(
+      () => setPlayIndex((i) => (i + 1) % anim.frames.length),
+      1000 / anim.fps,
+    );
+    return () => clearInterval(timer);
+  }, [playing, anim.fps, anim.frames.length]);
+
+  /** Frames with the frame being edited written back (the sync effect may not have run yet) */
+  const syncedFrames = () =>
+    anim.frames.map((f, i) => (i === frameIndex ? animHistory.present : f));
+  const selectFrame = (i: number, frames = syncedFrames()) => {
+    setAnim({ ...anim, frames });
+    setFrameIndex(i);
+    setAnimHistory(historyOf(frames[i]));
+  };
+  const insertFrame = (frame: Grid) => {
+    if (anim.frames.length >= MAX_FRAMES) return;
+    const frames = syncedFrames();
+    frames.splice(frameIndex + 1, 0, frame);
+    selectFrame(frameIndex + 1, frames);
+  };
+  const deleteFrame = () => {
+    if (anim.frames.length <= 1) return;
+    const frames = anim.frames.filter((_, i) => i !== frameIndex);
+    selectFrame(Math.max(0, frameIndex - 1), frames);
+  };
+  const moveFrame = (delta: -1 | 1) => {
+    const to = frameIndex + delta;
+    if (to < 0 || to >= anim.frames.length) return;
+    const frames = syncedFrames();
+    [frames[frameIndex], frames[to]] = [frames[to], frames[frameIndex]];
+    setAnim({ ...anim, frames });
+    setFrameIndex(to);
+  };
+
+  const isAnimate = settings.tab === "animate";
+  const isEditing = settings.tab === "draw" || isAnimate;
+  const history = isAnimate ? animHistory : drawHistory;
+  const setHistory = isAnimate ? setAnimHistory : setDrawHistory;
 
   const [tool, setTool] = useState<Tool>("pencil");
   const [brush, setBrushState] = useState<Brush>({
@@ -226,7 +301,7 @@ export function AsciiEditor() {
 
   // Keyboard: undo/redo, text typing, tool shortcuts (only on the Draw tab and outside form fields)
   useEffect(() => {
-    if (settings.tab !== "draw") return;
+    if (!isEditing) return;
     const onKey = (e: KeyboardEvent) => {
       if (isTyping(e.target)) return;
       const mod = e.ctrlKey || e.metaKey;
@@ -277,18 +352,69 @@ export function AsciiEditor() {
       ? textGrid
       : settings.tab === "image"
         ? imageGrid
-        : (draft ?? history.present);
+        : isAnimate && playing
+          ? (anim.frames[playIndex] ?? history.present)
+          : (draft ?? history.present);
+  const onionGrid =
+    isAnimate && onion && !playing && frameIndex > 0 ? anim.frames[frameIndex - 1] : null;
 
   const editInDraw = () => {
-    setHistory((h) => commit(h, activeGrid));
+    setDrawHistory((h) => commit(h, activeGrid));
     setCaret(null);
     update({ tab: "draw" });
+  };
+
+  const exportGif = () => {
+    try {
+      download(
+        "ascii-animation.gif",
+        toGif(syncedFrames(), {
+          fps: anim.fps,
+          background: settings.background,
+          foreground: settings.foreground,
+        }),
+      );
+    } catch {
+      toast.error("GIF export failed");
+    }
+  };
+
+  const copyFrames = async () => {
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(syncedFrames().map(toLines), null, 2));
+      toast.success("JSON frames copied");
+    } catch {
+      toast.error("Clipboard is not available");
+    }
+  };
+
+  const sendAnimation = () => {
+    saveBannerAnimation({ frames: syncedFrames().map(toLines), fps: anim.fps });
+    router.push("/components/terminal?animation=editor");
   };
 
   const sendToTerminal = () => {
     saveBannerArt(toLines(activeGrid));
     router.push("/components/terminal?bannerMode=art");
   };
+
+  const drawPanel = (
+    <DrawPanel
+      key={`${history.present.width}x${history.present.height}`}
+      tool={tool}
+      setTool={setTool}
+      brush={brush}
+      setBrush={setBrush}
+      width={history.present.width}
+      height={history.present.height}
+      onResize={(w, h) => setHistory((hist) => commit(hist, resizeGrid(hist.present, w, h)))}
+      onClear={() => setHistory((h) => commit(h, createGrid(h.present.width, h.present.height)))}
+      canUndo={history.past.length > 0}
+      canRedo={history.future.length > 0}
+      onUndo={() => setHistory(undo)}
+      onRedo={() => setHistory(redo)}
+    />
+  );
 
   return (
     <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
@@ -303,9 +429,10 @@ export function AsciiEditor() {
             foreground={settings.foreground}
             background={settings.background}
             label={`ASCII ${settings.tab} preview`}
-            showGrid={settings.tab === "draw"}
-            caret={settings.tab === "draw" ? caret : null}
-            {...(settings.tab === "draw" ? { onCellDown, onCellMove, onCellUp } : {})}
+            showGrid={isEditing && !playing}
+            caret={isEditing ? caret : null}
+            onion={onionGrid}
+            {...(isEditing && !playing ? { onCellDown, onCellMove, onCellUp } : {})}
           />
         </div>
         <ExportBar
@@ -313,6 +440,14 @@ export function AsciiEditor() {
           foreground={settings.foreground}
           background={settings.background}
           onEditInDraw={settings.tab === "draw" ? undefined : editInDraw}
+          onAddFrame={
+            isAnimate
+              ? undefined
+              : () => {
+                  insertFrame(activeGrid);
+                  update({ tab: "animate" });
+                }
+          }
           onSendToTerminal={sendToTerminal}
         />
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg border bg-card px-4 py-3">
@@ -362,6 +497,7 @@ export function AsciiEditor() {
             <TabsTrigger value="text">Text</TabsTrigger>
             <TabsTrigger value="image">Image</TabsTrigger>
             <TabsTrigger value="draw">Draw</TabsTrigger>
+            <TabsTrigger value="animate">Animate</TabsTrigger>
           </TabsList>
           <TabsContent value="text" className="mt-4">
             <TextPanel settings={settings} update={update} />
@@ -375,25 +511,32 @@ export function AsciiEditor() {
             />
           </TabsContent>
           <TabsContent value="draw" className="mt-4">
-            <DrawPanel
-              key={`${history.present.width}x${history.present.height}`}
-              tool={tool}
-              setTool={setTool}
-              brush={brush}
-              setBrush={setBrush}
-              width={history.present.width}
-              height={history.present.height}
-              onResize={(w, h) =>
-                setHistory((hist) => commit(hist, resizeGrid(hist.present, w, h)))
-              }
-              onClear={() =>
-                setHistory((h) => commit(h, createGrid(h.present.width, h.present.height)))
-              }
-              canUndo={history.past.length > 0}
-              canRedo={history.future.length > 0}
-              onUndo={() => setHistory(undo)}
-              onRedo={() => setHistory(redo)}
-            />
+            {drawPanel}
+          </TabsContent>
+          <TabsContent value="animate" className="mt-4">
+            <AnimatePanel
+              count={anim.frames.length}
+              index={frameIndex}
+              onSelect={(i) => selectFrame(i)}
+              onAdd={() => insertFrame(createGrid(history.present.width, history.present.height))}
+              onDuplicate={() => insertFrame(history.present)}
+              onDelete={deleteFrame}
+              onMove={moveFrame}
+              fps={anim.fps}
+              onFps={(fps) => setAnim((a) => ({ ...a, fps }))}
+              onion={onion}
+              onOnion={setOnion}
+              playing={playing}
+              onPlay={() => {
+                setPlayIndex(frameIndex);
+                setPlaying((p) => !p);
+              }}
+              onExportGif={exportGif}
+              onCopyJson={copyFrames}
+              onSendToTerminal={sendAnimation}
+            >
+              {isAnimate ? drawPanel : null}
+            </AnimatePanel>
           </TabsContent>
         </Tabs>
       </aside>

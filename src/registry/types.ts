@@ -52,6 +52,22 @@ export interface ComponentMeta {
   requirements: string[];
 }
 
+/** Shared site palette; each entry maps it onto its own tokens (global theme, palette from image) */
+export interface SitePalette {
+  name: string;
+  bg: string;
+  fg: string;
+  accent: string;
+  muted: string;
+}
+
+export interface Preset {
+  name: string;
+  /** Applied on top of initialState() */
+  options?: Record<string, OptionValue>;
+  tokens?: Record<string, string>;
+}
+
 export interface RegistryEntry extends ComponentMeta {
   controls: ControlGroup[];
   /** Option key that selects the base theme; changing it resets token overrides */
@@ -64,4 +80,12 @@ export interface RegistryEntry extends ComponentMeta {
   /** Applies state to the config source text */
   customize(configSource: string, state: StudioState): string;
   usage(framework: Framework): string;
+  /** Ready-made combinations shown in the Presets menu */
+  presets?: Preset[];
+  /** Keys Randomize never touches (text, content, images, …) */
+  randomizeSkip?: string[];
+  /** Maps a site palette onto this component's token overrides */
+  palette?: (p: SitePalette) => Record<string, string>;
+  /** Color key → key of the color it sits on, for the contrast check */
+  contrastPairs?: Record<string, string>;
 }
